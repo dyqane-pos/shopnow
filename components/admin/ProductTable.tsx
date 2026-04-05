@@ -1,9 +1,44 @@
+'use client'
 import type { Product } from '@/lib/types'
 import { fmt } from '@/lib/utils'
 import Link from 'next/link'
+import { useTransition } from 'react'
 import { deleteProduct, toggleActive } from '@/actions/products'
 
+function DeleteButton({ id }: { id: number }) {
+  const [pending, startTransition] = useTransition()
+  return (
+    <button
+      disabled={pending}
+      className="admin-btn-ay admin-btn-danger"
+      onClick={() => {
+        if (!confirm('Fshi produktin?')) return
+        startTransition(() => { deleteProduct(id) })
+      }}
+    >
+      {pending ? '...' : 'Fshi'}
+    </button>
+  )
+}
+
+function ToggleButton({ id, isActive }: { id: number; isActive: boolean }) {
+  const [pending, startTransition] = useTransition()
+  return (
+    <button
+      disabled={pending}
+      className={`admin-btn-ay ${isActive ? 'admin-btn-ghost' : 'admin-btn-primary'}`}
+      onClick={() => startTransition(() => { toggleActive(id, isActive) })}
+    >
+      {pending ? '...' : isActive ? 'Po' : 'Jo'}
+    </button>
+  )
+}
+
 export default function ProductTable({ products }: { products: Product[] }) {
+  if (products.length === 0) {
+    return <div className="empty-ay"><h3>Asnjë produkt</h3><p>Shto produktin e parë.</p></div>
+  }
+
   return (
     <table className="admin-table-ay">
       <thead>
@@ -27,21 +62,10 @@ export default function ProductTable({ products }: { products: Product[] }) {
               {p.old_price && <span style={{ color: '#aaa', marginLeft: '6px', textDecoration: 'line-through' }}>{fmt(p.old_price)}</span>}
             </td>
             <td>{p.category}</td>
-            <td>
-              <form action={async () => { 'use server'; await toggleActive(p.id, p.is_active) }}>
-                <button type="submit" className={`admin-btn-ay ${p.is_active ? 'admin-btn-ghost' : 'admin-btn-primary'}`}>
-                  {p.is_active ? 'Po' : 'Jo'}
-                </button>
-              </form>
-            </td>
+            <td><ToggleButton id={p.id} isActive={p.is_active} /></td>
             <td style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
               <Link href={`/admin/products/${p.id}`} className="admin-btn-ay admin-btn-ghost">Ndrysho</Link>
-              <form action={async () => { 'use server'; await deleteProduct(p.id) }}>
-                <button type="submit" className="admin-btn-ay admin-btn-danger"
-                  onClick={e => { if (!confirm('Fshi produktin?')) e.preventDefault() }}>
-                  Fshi
-                </button>
-              </form>
+              <DeleteButton id={p.id} />
             </td>
           </tr>
         ))}
