@@ -10,38 +10,39 @@ interface SearchParams {
   q?: string
   sort?: string
   gender?: string
-  sidebar?: string
   modal?: string
 }
 
 export default async function ShopPage({ searchParams }: { searchParams: SearchParams }) {
-  const supabase = createServerSupabase()
+  let products: Product[] = []
 
-  let query = supabase.from('products').select('*').eq('is_active', true)
+  try {
+    const supabase = createServerSupabase()
+    let query = supabase.from('products').select('*').eq('is_active', true)
 
-  if (searchParams.cat && searchParams.cat !== 'all') {
-    query = query.eq('category', searchParams.cat)
-  }
-  if (searchParams.sale === 'true') {
-    query = query.eq('is_sale', true)
-  }
-  if (searchParams.q) {
-    query = query.or(`name.ilike.%${searchParams.q}%,brand.ilike.%${searchParams.q}%`)
-  }
-  if (searchParams.gender) {
-    query = query.eq('gender', searchParams.gender)
-  }
+    if (searchParams.cat && searchParams.cat !== 'all') {
+      query = query.eq('category', searchParams.cat)
+    }
+    if (searchParams.sale === 'true') {
+      query = query.eq('is_sale', true)
+    }
+    if (searchParams.q) {
+      query = query.or(`name.ilike.%${searchParams.q}%,brand.ilike.%${searchParams.q}%`)
+    }
+    if (searchParams.gender) {
+      query = query.eq('gender', searchParams.gender)
+    }
 
-  // Sort
-  switch (searchParams.sort) {
-    case 'price_asc': query = query.order('price', { ascending: true }); break
-    case 'price_desc': query = query.order('price', { ascending: false }); break
-    case 'newest': query = query.order('created_at', { ascending: false }); break
-    default: query = query.order('views', { ascending: false })
-  }
+    switch (searchParams.sort) {
+      case 'price_asc': query = query.order('price', { ascending: true }); break
+      case 'price_desc': query = query.order('price', { ascending: false }); break
+      case 'newest': query = query.order('created_at', { ascending: false }); break
+      default: query = query.order('views', { ascending: false })
+    }
 
-  const { data } = await query
-  const products: Product[] = data ?? []
+    const { data } = await query
+    products = data ?? []
+  } catch {}
 
   return (
     <>

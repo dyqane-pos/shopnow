@@ -4,10 +4,14 @@ import { NextResponse, type NextRequest } from 'next/server'
 export async function middleware(request: NextRequest) {
   const response = NextResponse.next({ request: { headers: request.headers } })
 
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+  // If env vars are missing just pass through — app pages handle auth themselves
+  if (!url || !key) return response
+
+  try {
+    const supabase = createServerClient(url, key, {
       cookies: {
         getAll() { return request.cookies.getAll() },
         setAll(cookiesToSet: { name: string; value: string; options: CookieOptions }[]) {
@@ -17,27 +21,27 @@ export async function middleware(request: NextRequest) {
           })
         },
       },
+    })
+
+    const { data: { user } } = await supabase.auth.getUser()
+    const path = request.nextUrl.pathname
+
+    const isProtected = ['/profile', '/cart', '/admin'].some(p => path.startsWith(p))
+    const isAuthRoute = path === '/login'
+
+    if (isProtected && !user) {
+      const next = request.nextUrl.clone()
+      next.pathname = '/login'
+      next.searchParams.set('next', path)
+      return NextResponse.redirect(next)
     }
-  )
 
-  const { data: { user } } = await supabase.auth.getUser()
-  const path = request.nextUrl.pathname
-
-  const isProtected = ['/profile', '/cart', '/admin'].some(p => path.startsWith(p))
-  const isAuthRoute = path === '/login'
-
-  if (isProtected && !user) {
-    const url = request.nextUrl.clone()
-    url.pathname = '/login'
-    url.searchParams.set('next', path)
-    return NextResponse.redirect(url)
-  }
-
-  if (isAuthRoute && user) {
-    const url = request.nextUrl.clone()
-    url.pathname = '/'
-    return NextResponse.redirect(url)
-  }
+    if (isAuthRoute && user) {
+      const next = request.nextUrl.clone()
+      next.pathname = '/'
+      return NextResponse.redirect(next)
+    }
+  } catch {}
 
   return response
 }
