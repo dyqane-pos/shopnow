@@ -12,6 +12,16 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="sq">
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: `
+          try {
+            var t = localStorage.getItem('theme');
+            if (t === 'dark' || (!t && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+              document.documentElement.setAttribute('data-theme', 'dark');
+            }
+          } catch(e) {}
+        `}} />
+      </head>
       <body>
         <AuthProvider>
           <CartProvider>
