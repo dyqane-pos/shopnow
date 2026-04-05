@@ -1,9 +1,10 @@
 'use server'
-import { createServerSupabase } from '@/lib/supabase-server'
+import { createServerSupabase, createServiceSupabase } from '@/lib/supabase-server'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 
 export async function saveProduct(_prev: unknown, formData: FormData) {
+  // Verifiko autentikimin me anon client
   const supabase = createServerSupabase()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { error: 'Jo i autorizuar' }
@@ -27,12 +28,14 @@ export async function saveProduct(_prev: unknown, formData: FormData) {
     updated_at: new Date().toISOString(),
   }
 
+  // Përdor service role për të kaluar RLS (shmang recursion-in)
+  const service = createServiceSupabase()
   let error
   if (id) {
-    const { error: e } = await supabase.from('products').update(payload).eq('id', id)
+    const { error: e } = await service.from('products').update(payload).eq('id', id)
     error = e
   } else {
-    const { error: e } = await supabase.from('products').insert({ ...payload, is_active: true, views: 0, created_by: user.id })
+    const { error: e } = await service.from('products').insert({ ...payload, is_active: true, views: 0, created_by: user.id })
     error = e
   }
 
@@ -43,15 +46,15 @@ export async function saveProduct(_prev: unknown, formData: FormData) {
 }
 
 export async function deleteProduct(id: number) {
-  const supabase = createServerSupabase()
-  await supabase.from('products').delete().eq('id', id)
+  const service = createServiceSupabase()
+  await service.from('products').delete().eq('id', id)
   revalidatePath('/admin/products')
   revalidatePath('/')
 }
 
 export async function toggleActive(id: number, current: boolean) {
-  const supabase = createServerSupabase()
-  await supabase.from('products').update({ is_active: !current }).eq('id', id)
+  const service = createServiceSupabase()
+  await service.from('products').update({ is_active: !current }).eq('id', id)
   revalidatePath('/admin/products')
   revalidatePath('/')
 }
