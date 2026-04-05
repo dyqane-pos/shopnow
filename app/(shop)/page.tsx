@@ -1,4 +1,4 @@
-import { createServerSupabase } from '@/lib/supabase-server'
+import { createServiceSupabase } from '@/lib/supabase-server'
 import FilterBar from '@/components/shop/FilterBar'
 import ProductGrid from '@/components/shop/ProductGrid'
 import ProductModal from '@/components/shop/ProductModal'
@@ -17,7 +17,7 @@ export default async function ShopPage({ searchParams }: { searchParams: SearchP
   let products: Product[] = []
 
   try {
-    const supabase = createServerSupabase()
+    const supabase = createServiceSupabase()
     let query = supabase.from('products').select('*').eq('is_active', true)
 
     if (searchParams.cat && searchParams.cat !== 'all') {
