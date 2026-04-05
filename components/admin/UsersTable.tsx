@@ -1,6 +1,7 @@
 'use client'
-import { useTransition, useState } from 'react'
-import { setUserRole, deleteUser } from '@/actions/users'
+import { useTransition, useState, useRef } from 'react'
+import { useFormState } from 'react-dom'
+import { setUserRole, deleteUser, createUser } from '@/actions/users'
 import { ini } from '@/lib/utils'
 
 interface UserRow {
@@ -13,13 +14,72 @@ interface UserRow {
 
 const ROLES: UserRow['role'][] = ['user', 'admin', 'superadmin']
 const roleLabel: Record<string, string> = { user: 'Përdorues', admin: 'Admin', superadmin: 'Super Admin' }
-const roleClass: Record<string, string> = {
-  user: '', admin: 'status-confirmed', superadmin: 'status-delivered'
+
+function CreateUserModal({ onClose }: { onClose: () => void }) {
+  const [state, action] = useFormState(createUser, null)
+  const [pending, startTransition] = useTransition()
+  const formRef = useRef<HTMLFormElement>(null)
+
+  if (state?.success) {
+    onClose()
+  }
+
+  return (
+    <div style={{
+      position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)',
+      display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000
+    }}>
+      <div style={{
+        background: '#fff', borderRadius: 10, padding: '2rem',
+        width: '100%', maxWidth: 440, boxShadow: '0 20px 60px rgba(0,0,0,0.3)'
+      }}>
+        <h2 style={{ margin: '0 0 1.5rem', fontSize: '18px', fontWeight: 800 }}>Shto Përdorues të Ri</h2>
+        <form ref={formRef} action={(fd) => startTransition(() => action(fd))}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <div>
+              <label className="admin-label-ay">Emri</label>
+              <input name="name" className="admin-input-ay" placeholder="Emri Mbiemri" required />
+            </div>
+            <div>
+              <label className="admin-label-ay">Email</label>
+              <input name="email" type="email" className="admin-input-ay" placeholder="email@shembull.com" required />
+            </div>
+            <div>
+              <label className="admin-label-ay">Fjalëkalimi</label>
+              <input name="password" type="password" className="admin-input-ay" placeholder="Min. 6 karaktere" required />
+            </div>
+            <div>
+              <label className="admin-label-ay">Roli</label>
+              <select name="role" className="admin-select-ay">
+                <option value="user">Përdorues</option>
+                <option value="admin">Admin</option>
+                <option value="superadmin">Super Admin</option>
+              </select>
+            </div>
+            {state?.error && (
+              <div style={{ color: '#dc2626', fontSize: '13px', padding: '8px 12px', background: '#fef2f2', borderRadius: 6 }}>
+                {state.error}
+              </div>
+            )}
+            <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end', marginTop: '0.5rem' }}>
+              <button type="button" onClick={onClose} className="admin-btn-ay admin-btn-ghost">
+                Anulo
+              </button>
+              <button type="submit" disabled={pending} className="admin-btn-ay admin-btn-primary">
+                {pending ? 'Duke krijuar...' : 'Krijo llogarinë'}
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  )
 }
 
 export default function UsersTable({ users, isSuperadmin }: { users: UserRow[]; isSuperadmin: boolean }) {
   const [, startTransition] = useTransition()
   const [search, setSearch] = useState('')
+  const [showCreate, setShowCreate] = useState(false)
 
   const filtered = users.filter(u =>
     u.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -28,14 +88,19 @@ export default function UsersTable({ users, isSuperadmin }: { users: UserRow[]; 
 
   return (
     <div>
-      <div style={{ marginBottom: '1rem' }}>
+      <div style={{ display: 'flex', gap: '1rem', marginBottom: '1rem', alignItems: 'center' }}>
         <input
           className="admin-input-ay"
-          style={{ maxWidth: 320 }}
+          style={{ maxWidth: 300, flex: 1 }}
           placeholder="Kërko sipas emrit ose emailit..."
           value={search}
           onChange={e => setSearch(e.target.value)}
         />
+        {isSuperadmin && (
+          <button className="admin-btn-ay admin-btn-primary" onClick={() => setShowCreate(true)}>
+            + Shto Përdorues
+          </button>
+        )}
       </div>
 
       <table className="admin-table-ay">
@@ -76,9 +141,7 @@ export default function UsersTable({ users, isSuperadmin }: { users: UserRow[]; 
                     ))}
                   </select>
                 ) : (
-                  <span className={`status-pill-ay ${roleClass[u.role]}`}>
-                    {roleLabel[u.role]}
-                  </span>
+                  <span>{roleLabel[u.role]}</span>
                 )}
               </td>
               <td style={{ color: '#888', fontSize: '11px' }}>
@@ -89,7 +152,7 @@ export default function UsersTable({ users, isSuperadmin }: { users: UserRow[]; 
                   <button
                     className="admin-btn-ay admin-btn-danger"
                     onClick={() => {
-                      if (!confirm(`Fshi llogarinë e ${u.name}? Ky veprim nuk mund të kthehet.`)) return
+                      if (!confirm(`Fshi llogarinë e ${u.name}?`)) return
                       startTransition(() => { deleteUser(u.id) })
                     }}
                   >
@@ -107,6 +170,8 @@ export default function UsersTable({ users, isSuperadmin }: { users: UserRow[]; 
           <h3>Asnjë rezultat</h3>
         </div>
       )}
+
+      {showCreate && <CreateUserModal onClose={() => setShowCreate(false)} />}
     </div>
   )
 }
