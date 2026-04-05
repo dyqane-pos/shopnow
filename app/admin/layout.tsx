@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation'
-import { createServerSupabase } from '@/lib/supabase-server'
+import { createServerSupabase, createServiceSupabase } from '@/lib/supabase-server'
 import Link from 'next/link'
 
 const navLinks = [
@@ -16,11 +16,15 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) redirect('/login')
 
-    const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single()
+    // Try service role to bypass RLS
+    const service = createServiceSupabase()
+    const { data: profile } = await service
+      .from('profiles').select('role').eq('id', user.id).maybeSingle()
+
     if (!profile || !['admin', 'superadmin'].includes(profile.role)) redirect('/')
   } catch (e: unknown) {
-    const msg = e instanceof Error ? e.message : ''
-    if (msg.includes('NEXT_REDIRECT')) throw e
+    const err = e as { digest?: string }
+    if (err?.digest?.startsWith('NEXT_REDIRECT')) throw e
     redirect('/login')
   }
 
