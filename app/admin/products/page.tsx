@@ -4,9 +4,12 @@ import Link from 'next/link'
 import type { Product } from '@/lib/types'
 
 export default async function AdminProductsPage() {
-  const supabase = createServerSupabase()
-  const { data } = await supabase.from('products').select('*').order('created_at', { ascending: false })
-  const products: Product[] = data ?? []
+  let products: Product[] = []
+  try {
+    const supabase = createServerSupabase()
+    const { data } = await supabase.from('products').select('*').order('created_at', { ascending: false })
+    products = data ?? []
+  } catch {}
 
   return (
     <div>

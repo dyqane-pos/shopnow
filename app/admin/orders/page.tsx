@@ -3,9 +3,12 @@ import OrdersTable from '@/components/admin/OrdersTable'
 import type { Order } from '@/lib/types'
 
 export default async function AdminOrdersPage() {
-  const supabase = createServerSupabase()
-  const { data } = await supabase.from('orders').select('*').order('created_at', { ascending: false })
-  const orders: Order[] = data ?? []
+  let orders: Order[] = []
+  try {
+    const supabase = createServerSupabase()
+    const { data } = await supabase.from('orders').select('*').order('created_at', { ascending: false })
+    orders = data ?? []
+  } catch {}
 
   return (
     <div>
