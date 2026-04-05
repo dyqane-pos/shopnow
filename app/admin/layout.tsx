@@ -5,6 +5,7 @@ import Link from 'next/link'
 const navLinks = [
   { href: '/admin/products', label: 'Produktet' },
   { href: '/admin/orders', label: 'Porositë' },
+  { href: '/admin/users', label: 'Përdoruesit' },
   { href: '/admin/categories', label: 'Kategoritë' },
   { href: '/admin/admins', label: 'Adminët' },
 ]
