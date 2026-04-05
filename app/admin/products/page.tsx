@@ -1,4 +1,4 @@
-import { createServerSupabase } from '@/lib/supabase-server'
+import { createServiceSupabase } from '@/lib/supabase-server'
 import ProductTable from '@/components/admin/ProductTable'
 import Link from 'next/link'
 import type { Product } from '@/lib/types'
@@ -6,7 +6,7 @@ import type { Product } from '@/lib/types'
 export default async function AdminProductsPage() {
   let products: Product[] = []
   try {
-    const supabase = createServerSupabase()
+    const supabase = createServiceSupabase()
     const { data } = await supabase.from('products').select('*').order('created_at', { ascending: false })
     products = data ?? []
   } catch {}

@@ -1,11 +1,11 @@
-import { createServerSupabase } from '@/lib/supabase-server'
+import { createServiceSupabase } from '@/lib/supabase-server'
 import OrdersTable from '@/components/admin/OrdersTable'
 import type { Order } from '@/lib/types'
 
 export default async function AdminOrdersPage() {
   let orders: Order[] = []
   try {
-    const supabase = createServerSupabase()
+    const supabase = createServiceSupabase()
     const { data } = await supabase.from('orders').select('*').order('created_at', { ascending: false })
     orders = data ?? []
   } catch {}
