@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node_modules/.bin/next build:*)",
+      "Bash(node_modules/.bin/next dev:*)",
+      "Bash(curl -s http://localhost:3001)"
+    ]
+  }
+}
