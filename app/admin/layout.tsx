@@ -3,6 +3,7 @@ import { createServerSupabase, createServiceSupabase } from '@/lib/supabase-serv
 import Link from 'next/link'
 
 const navLinks = [
+  { href: '/admin', label: 'Dashboard' },
   { href: '/admin/products', label: 'Produktet' },
   { href: '/admin/orders', label: 'Porositë' },
   { href: '/admin/users', label: 'Përdoruesit' },
