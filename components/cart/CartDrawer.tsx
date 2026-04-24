@@ -1,28 +1,16 @@
 'use client'
 import Image from 'next/image'
 import Link from 'next/link'
+import { useState } from 'react'
 import { useCart } from '@/hooks/useCart'
 import { fmt } from '@/lib/utils'
-import { checkout } from '@/actions/orders'
 import { useToast } from '@/hooks/useToast'
-import { useTransition } from 'react'
+import CheckoutModal from './CheckoutModal'
 
 export default function CartDrawer() {
   const { items, removeItem, updateQty, cartTotal, clearCart } = useCart()
   const { showToast } = useToast()
-  const [isPending, startTransition] = useTransition()
-
-  const handleCheckout = () => {
-    startTransition(async () => {
-      const result = await checkout(items, cartTotal)
-      if (result?.error) {
-        showToast(result.error, 'error')
-      } else {
-        clearCart()
-        showToast('Porosia u vendos me sukses!')
-      }
-    })
-  }
+  const [showCheckout, setShowCheckout] = useState(false)
 
   if (items.length === 0) {
     return (
@@ -81,13 +69,19 @@ export default function CartDrawer() {
         Total: {fmt(cartTotal)}
       </div>
 
-      <button
-        className="checkout-btn-ay"
-        onClick={handleCheckout}
-        disabled={isPending}
-      >
-        {isPending ? 'Duke procesuar...' : 'Vazhdo me blerjen'}
+      <button className="checkout-btn-ay" onClick={() => setShowCheckout(true)}>
+        Vazhdo me blerjen
       </button>
+
+      {showCheckout && (
+        <CheckoutModal
+          items={items}
+          total={cartTotal}
+          onClose={() => setShowCheckout(false)}
+          onSuccess={() => { clearCart(); setShowCheckout(false) }}
+          showToast={showToast}
+        />
+      )}
     </div>
   )
 }

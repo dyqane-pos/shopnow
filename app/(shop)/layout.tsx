@@ -8,7 +8,7 @@ import { CATEGORIES, SIDEBAR_LINKS, type Category } from '@/lib/types'
 const FALLBACK_PRODUCT_CATS: Category[] = CATEGORIES.map((c, i) => ({
   id: c.id, label: c.label, type: 'product', sort_order: i, is_active: true,
 }))
-const FALLBACK_GENDERS: Category[] = ['Women', 'Men'].map((g, i) => ({
+const FALLBACK_GENDERS: Category[] = ['Women', 'Men', 'Kids'].map((g, i) => ({
   id: g.toLowerCase(), label: g, type: 'gender', sort_order: i, is_active: true,
 }))
 const FALLBACK_SIDEBAR: Category[] = SIDEBAR_LINKS.map((s, i) => ({

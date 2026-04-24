@@ -26,6 +26,7 @@ export default function OrdersTable({ orders, userMap }: { orders: Order[]; user
           <th>Klienti</th>
           <th>Artikuj</th>
           <th>Total</th>
+          <th>Pagesa</th>
           <th>Data</th>
           <th>Statusi</th>
         </tr>
@@ -45,6 +46,15 @@ export default function OrdersTable({ orders, userMap }: { orders: Order[]; user
                 </button>
               </td>
               <td style={{ fontWeight: 700 }}>{fmt(o.total)}</td>
+              <td>
+                <span style={{
+                  fontSize: '11px', fontWeight: 700, padding: '2px 8px', borderRadius: 999,
+                  background: o.payment_method === 'card' ? '#e8f5e9' : '#fff8e1',
+                  color: o.payment_method === 'card' ? '#2e7d32' : '#f57f17',
+                }}>
+                  {o.payment_method === 'card' ? '💳 Kartë' : '💵 Cash'}
+                </span>
+              </td>
               <td>{new Date(o.created_at).toLocaleDateString('sq-AL')}</td>
               <td>
                 <select
@@ -64,8 +74,13 @@ export default function OrdersTable({ orders, userMap }: { orders: Order[]; user
             </tr>
             {expanded.has(o.id) && Array.isArray(o.items) && o.items.length > 0 && (
               <tr>
-                <td colSpan={6} style={{ padding: '0 12px 12px', background: '#fafaf9' }}>
+                <td colSpan={7} style={{ padding: '0 12px 12px', background: '#fafaf9' }}>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', paddingTop: '8px' }}>
+                    {o.delivery_info && (
+                      <div style={{ fontSize: '12px', color: '#666', padding: '8px 10px', background: '#f5f5f3', borderRadius: 6, marginBottom: '4px' }}>
+                        📍 <strong>{o.delivery_info.name}</strong> · {o.delivery_info.phone} · {o.delivery_info.address}, {o.delivery_info.city}
+                      </div>
+                    )}
                     {o.items.map((item, i) => (
                       <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '13px' }}>
                         {item.photo_url ? (

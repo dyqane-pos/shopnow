@@ -26,12 +26,21 @@ export interface Product {
   updated_at: string
 }
 
+export interface DeliveryInfo {
+  name: string
+  phone: string
+  address: string
+  city: string
+}
+
 export interface Order {
   id: number
   user_id: string
   items: CartItem[]
   total: number
   status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled'
+  payment_method?: 'cash' | 'card'
+  delivery_info?: DeliveryInfo
   created_at: string
 }
 
