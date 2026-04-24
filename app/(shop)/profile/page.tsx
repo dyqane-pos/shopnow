@@ -2,15 +2,7 @@ import { redirect } from 'next/navigation'
 import { createServerSupabase } from '@/lib/supabase-server'
 import { ini, fmt } from '@/lib/utils'
 import type { Order } from '@/lib/types'
-
-const statusClass: Record<string, string> = {
-  pending: 'status-pending', processing: 'status-confirmed',
-  shipped: 'status-shipped', delivered: 'status-delivered', cancelled: 'status-cancelled'
-}
-const statusLabel: Record<string, string> = {
-  pending: 'Në pritje', processing: 'Duke procesuar', shipped: 'Dërguar',
-  delivered: 'Dorëzuar', cancelled: 'Anuluar'
-}
+import ProfileOrders from '@/components/shop/ProfileOrders'
 
 export default async function ProfilePage() {
   const supabase = createServerSupabase()
@@ -42,22 +34,7 @@ export default async function ProfilePage() {
           <p>Bëj porosinë e parë nga dyqani.</p>
         </div>
       ) : (
-        orders.map((o: Order) => (
-          <div key={o.id} className="order-row-ay">
-            <div>
-              <div style={{ fontWeight: 700, marginBottom: '2px' }}>#{o.id}</div>
-              <div style={{ fontSize: '11px', color: '#888' }}>
-                {new Date(o.created_at).toLocaleDateString('sq-AL')} · {Array.isArray(o.items) ? o.items.length : 0} artikuj
-              </div>
-            </div>
-            <div style={{ textAlign: 'right' }}>
-              <div style={{ fontWeight: 700, marginBottom: '4px' }}>{fmt(o.total)}</div>
-              <span className={`status-pill-ay ${statusClass[o.status] ?? ''}`}>
-                {statusLabel[o.status] ?? o.status}
-              </span>
-            </div>
-          </div>
-        ))
+        <ProfileOrders orders={orders as Order[]} />
       )}
     </div>
   )

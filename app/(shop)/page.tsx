@@ -11,6 +11,7 @@ interface SearchParams {
   sort?: string
   gender?: string
   modal?: string
+  sidebar?: string
 }
 
 export default async function ShopPage({ searchParams }: { searchParams: SearchParams }) {
@@ -33,7 +34,15 @@ export default async function ShopPage({ searchParams }: { searchParams: SearchP
       query = query.eq('gender', searchParams.gender)
     }
 
-    switch (searchParams.sort) {
+    if (searchParams.sidebar) {
+      const s = searchParams.sidebar
+      if (s !== 'New' && s !== 'Trending') {
+        query = query.or(`name.ilike.%${s}%,brand.ilike.%${s}%`)
+      }
+    }
+
+    const sidebarSort = searchParams.sidebar === 'New' ? 'newest' : undefined
+    switch (searchParams.sort ?? sidebarSort) {
       case 'price_asc': query = query.order('price', { ascending: true }); break
       case 'price_desc': query = query.order('price', { ascending: false }); break
       case 'newest': query = query.order('created_at', { ascending: false }); break
