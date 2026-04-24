@@ -53,7 +53,7 @@ export default function FilterBar({ total, sizes, view }: {
         <button className={`filter-chip-ay${activeCat === 'all' ? ' active' : ''}`} onClick={() => push({ cat: null })}>
           Të gjitha
         </button>
-        {productCats.map(c => (
+        {productCats.filter(c => c.id !== 'all').map(c => (
           <button key={c.id} className={`filter-chip-ay${activeCat === c.id ? ' active' : ''}`} onClick={() => push({ cat: c.id })}>
             {c.label}
           </button>
