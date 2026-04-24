@@ -247,6 +247,40 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   margin-bottom: .75rem;
 }
 
+/* ── PAGE HEADER ── */
+.page-header-ay {
+  margin-bottom: 1rem;
+}
+.breadcrumb-ay {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: #888;
+  margin-bottom: 4px;
+}
+.bc-sep { color: #ccc; }
+.page-title-row-ay {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+.page-title-ay {
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -.3px;
+}
+.page-title-sub {
+  font-size: 15px;
+  font-weight: 400;
+  color: #888;
+}
+.page-title-count-ay {
+  font-size: 13px;
+  color: #aaa;
+  font-weight: 500;
+}
+
 /* ── VIEW TOGGLE ── */
 .view-toggle-ay {
   display: flex;
@@ -897,6 +931,12 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 [data-theme="dark"] .hsizes-ay { background: rgba(28,28,28,.97); }
 [data-theme="dark"] .hsize-ay { border-color: #3a3a3a; color: #f0f0f0; }
 [data-theme="dark"] .hsize-ay:hover { border-color: #f0f0f0; }
+
+[data-theme="dark"] .breadcrumb-ay { color: #555; }
+[data-theme="dark"] .bc-sep { color: #333; }
+[data-theme="dark"] .page-title-ay { color: #f0f0f0; }
+[data-theme="dark"] .page-title-sub { color: #666; }
+[data-theme="dark"] .page-title-count-ay { color: #555; }
 
 [data-theme="dark"] .filter-chip-ay { background: #1c1c1c; border-color: #333; color: #999; }
 [data-theme="dark"] .filter-chip-ay.active { background: #f0f0f0; border-color: #f0f0f0; color: #0f0f0f; }

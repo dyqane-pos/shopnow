@@ -3,9 +3,10 @@ import { useRouter, useSearchParams, usePathname } from 'next/navigation'
 import { useTransition, useState, useRef, useEffect } from 'react'
 import { useCategoriesContext } from '@/context/CategoriesContext'
 
-export default function FilterBar({ total, sizes, view }: {
+export default function FilterBar({ total, sizes, brands, view }: {
   total: number
   sizes: string[]
+  brands: string[]
   view: 'grid' | 'list'
 }) {
   const { productCats } = useCategoriesContext()
@@ -18,9 +19,10 @@ export default function FilterBar({ total, sizes, view }: {
   const isSale = params.get('sale') === 'true'
   const sort = params.get('sort') ?? ''
   const activeSize = params.get('size') ?? ''
+  const activeBrand = params.get('brand') ?? ''
   const [minVal, setMinVal] = useState(params.get('minPrice') ?? '')
   const [maxVal, setMaxVal] = useState(params.get('maxPrice') ?? '')
-  const [openDrop, setOpenDrop] = useState<'size' | 'price' | null>(null)
+  const [openDrop, setOpenDrop] = useState<'size' | 'brand' | 'price' | null>(null)
   const dropRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -44,7 +46,7 @@ export default function FilterBar({ total, sizes, view }: {
     setOpenDrop(null)
   }
 
-  const hasActiveFilters = isSale || activeSize || params.get('minPrice') || params.get('maxPrice')
+  const hasActiveFilters = isSale || activeSize || activeBrand || params.get('minPrice') || params.get('maxPrice')
 
   return (
     <div>
@@ -136,6 +138,46 @@ export default function FilterBar({ total, sizes, view }: {
           </div>
         )}
 
+        {/* Brand dropdown */}
+        {brands.length > 0 && (
+          <div style={{ position: 'relative' }}>
+            <button
+              className={`filter-chip-ay${activeBrand ? ' active' : ''}`}
+              onClick={() => setOpenDrop(openDrop === 'brand' ? null : 'brand')}
+            >
+              {activeBrand || 'Brendi'} ▾
+            </button>
+            {openDrop === 'brand' && (
+              <div className="filter-drop-ay" style={{ minWidth: 200, maxHeight: 260, overflowY: 'auto' }}>
+                <div style={{ fontWeight: 700, fontSize: '11px', marginBottom: '8px', color: '#888', letterSpacing: '.5px', textTransform: 'uppercase' }}>Brendi</div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                  {brands.map(b => (
+                    <button
+                      key={b}
+                      onClick={() => { push({ brand: activeBrand === b ? null : b }); setOpenDrop(null) }}
+                      style={{
+                        textAlign: 'left', padding: '5px 8px', borderRadius: 5, fontSize: '13px',
+                        fontWeight: activeBrand === b ? 700 : 400,
+                        background: activeBrand === b ? '#f0f0f0' : 'transparent',
+                      }}
+                    >
+                      {b}
+                    </button>
+                  ))}
+                </div>
+                {activeBrand && (
+                  <button
+                    onClick={() => { push({ brand: null }); setOpenDrop(null) }}
+                    style={{ marginTop: '10px', fontSize: '11px', color: '#888', textDecoration: 'underline' }}
+                  >
+                    Pastro
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Price dropdown */}
         <div style={{ position: 'relative' }}>
           <button
@@ -191,7 +233,7 @@ export default function FilterBar({ total, sizes, view }: {
         {hasActiveFilters && (
           <button
             style={{ fontSize: '11px', color: '#e8002d', fontWeight: 600, marginLeft: '4px' }}
-            onClick={() => { setMinVal(''); setMaxVal(''); push({ sale: null, size: null, minPrice: null, maxPrice: null }) }}
+            onClick={() => { setMinVal(''); setMaxVal(''); push({ sale: null, size: null, brand: null, minPrice: null, maxPrice: null }) }}
           >
             × Pastro filtrat
           </button>

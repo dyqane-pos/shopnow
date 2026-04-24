@@ -2,6 +2,7 @@ import { createServiceSupabase } from '@/lib/supabase-server'
 import FilterBar from '@/components/shop/FilterBar'
 import ProductGrid from '@/components/shop/ProductGrid'
 import ProductModal from '@/components/shop/ProductModal'
+import PageHeader from '@/components/shop/PageHeader'
 import type { Product } from '@/lib/types'
 
 interface SearchParams {
@@ -13,6 +14,7 @@ interface SearchParams {
   modal?: string
   sidebar?: string
   size?: string
+  brand?: string
   minPrice?: string
   maxPrice?: string
   view?: string
@@ -46,6 +48,9 @@ export default async function ShopPage({ searchParams }: { searchParams: SearchP
     if (searchParams.size) {
       query = query.contains('sizes', [searchParams.size])
     }
+    if (searchParams.brand) {
+      query = query.eq('brand', searchParams.brand)
+    }
     if (searchParams.minPrice) {
       query = query.gte('price', Number(searchParams.minPrice))
     }
@@ -73,11 +78,13 @@ export default async function ShopPage({ searchParams }: { searchParams: SearchP
     return a.localeCompare(b, undefined, { numeric: true })
   })
 
+  const brands = [...new Set(products.map(p => p.brand))].sort()
   const view = searchParams.view === 'list' ? 'list' : 'grid'
 
   return (
     <>
-      <FilterBar total={products.length} sizes={sizes} view={view} />
+      <PageHeader total={products.length} />
+      <FilterBar total={products.length} sizes={sizes} brands={brands} view={view} />
       <ProductGrid products={products} view={view} />
       {searchParams.modal && <ProductModal products={products} />}
     </>
