@@ -12,6 +12,10 @@ interface SearchParams {
   gender?: string
   modal?: string
   sidebar?: string
+  size?: string
+  minPrice?: string
+  maxPrice?: string
+  view?: string
 }
 
 export default async function ShopPage({ searchParams }: { searchParams: SearchParams }) {
@@ -33,12 +37,20 @@ export default async function ShopPage({ searchParams }: { searchParams: SearchP
     if (searchParams.gender) {
       query = query.eq('gender', searchParams.gender)
     }
-
     if (searchParams.sidebar) {
       const s = searchParams.sidebar
       if (s !== 'New' && s !== 'Trending') {
         query = query.or(`name.ilike.%${s}%,brand.ilike.%${s}%`)
       }
+    }
+    if (searchParams.size) {
+      query = query.contains('sizes', [searchParams.size])
+    }
+    if (searchParams.minPrice) {
+      query = query.gte('price', Number(searchParams.minPrice))
+    }
+    if (searchParams.maxPrice) {
+      query = query.lte('price', Number(searchParams.maxPrice))
     }
 
     const sidebarSort = searchParams.sidebar === 'New' ? 'newest' : undefined
@@ -53,10 +65,20 @@ export default async function ShopPage({ searchParams }: { searchParams: SearchP
     products = data ?? []
   } catch {}
 
+  const sizes = [...new Set(products.flatMap(p => p.sizes ?? []))].sort((a, b) => {
+    const order = ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL']
+    const ia = order.indexOf(a); const ib = order.indexOf(b)
+    if (ia !== -1 && ib !== -1) return ia - ib
+    if (ia !== -1) return -1; if (ib !== -1) return 1
+    return a.localeCompare(b, undefined, { numeric: true })
+  })
+
+  const view = searchParams.view === 'list' ? 'list' : 'grid'
+
   return (
     <>
-      <FilterBar total={products.length} />
-      <ProductGrid products={products} />
+      <FilterBar total={products.length} sizes={sizes} view={view} />
+      <ProductGrid products={products} view={view} />
       {searchParams.modal && <ProductModal products={products} />}
     </>
   )

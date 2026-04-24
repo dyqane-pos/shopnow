@@ -247,11 +247,86 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   margin-bottom: .75rem;
 }
 
+/* ── VIEW TOGGLE ── */
+.view-toggle-ay {
+  display: flex;
+  gap: 2px;
+  margin-left: 8px;
+  border: 1.5px solid #ddd;
+  border-radius: 999px;
+  overflow: hidden;
+}
+.view-btn-ay {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 28px;
+  background: #fff;
+  color: #aaa;
+  transition: background .15s, color .15s;
+}
+.view-btn-ay.active { background: #1a1a1a; color: #fff; }
+.view-btn-ay:hover:not(.active) { background: #f5f5f5; color: #555; }
+
+/* ── FILTER DROPDOWN ── */
+.filter-drop-ay {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  background: #fff;
+  border: 1.5px solid #e8e8e8;
+  border-radius: 10px;
+  padding: 14px;
+  box-shadow: 0 8px 32px rgba(0,0,0,.12);
+  z-index: 100;
+  min-width: 180px;
+}
+
 /* ── PRODUCT GRID ── */
 .grid-ay {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 1rem;
+}
+
+/* ── LIST VIEW ── */
+.list-ay {
+  display: flex;
+  flex-direction: column;
+  gap: .6rem;
+}
+.card-list-ay {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: #fff;
+  border-radius: 8px;
+  border: 1.5px solid #f0f0ee;
+  padding: 10px 14px 10px 10px;
+  cursor: pointer;
+  transition: box-shadow .2s, border-color .2s;
+}
+.card-list-ay:hover { box-shadow: 0 2px 12px rgba(0,0,0,.08); border-color: #ddd; }
+.card-list-img-ay {
+  position: relative;
+  width: 90px;
+  height: 110px;
+  flex-shrink: 0;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #f0f0ee;
+}
+.card-list-info-ay {
+  flex: 1;
+  min-width: 0;
+}
+.card-list-price-ay {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  flex-shrink: 0;
 }
 
 /* ── PRODUCT CARD ── */
@@ -828,6 +903,14 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 [data-theme="dark"] .filter-chip-ay:hover:not(.active) { border-color: #666; color: #f0f0f0; }
 [data-theme="dark"] .sort-select { background: #1c1c1c; border-color: #333; color: #999; }
 [data-theme="dark"] .results-count { color: #666; }
+[data-theme="dark"] .view-toggle-ay { border-color: #333; }
+[data-theme="dark"] .view-btn-ay { background: #1c1c1c; color: #555; }
+[data-theme="dark"] .view-btn-ay.active { background: #f0f0f0; color: #0f0f0f; }
+[data-theme="dark"] .view-btn-ay:hover:not(.active) { background: #252525; color: #999; }
+[data-theme="dark"] .filter-drop-ay { background: #1c1c1c; border-color: #2a2a2a; }
+[data-theme="dark"] .card-list-ay { background: #1c1c1c; border-color: #2a2a2a; }
+[data-theme="dark"] .card-list-ay:hover { border-color: #3a3a3a; }
+[data-theme="dark"] .card-list-img-ay { background: #252525; }
 
 [data-theme="dark"] .modal-panel-ay { background: #1c1c1c; }
 [data-theme="dark"] .modal-img-ay { background: #252525; }
