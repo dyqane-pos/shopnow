@@ -34,7 +34,7 @@ const CATEGORY_SIZES: Record<string, string> = {
   electronics: '',
 }
 
-const CATEGORY_TAGS: Record<string, string[]> = {
+const FALLBACK_CATEGORY_TAGS: Record<string, string[]> = {
   clothing:    ['New', 'Trending', 'T-shirts', 'Jeans', 'Jackets', 'Pants', 'Sweaters & hoodies', 'Underwear', 'Button-up shirts', 'Suits & jackets', 'Swimwear', 'Coats', 'Plus sizes', 'Occasions', 'Exclusive'],
   shoes:       ['New', 'Trending', 'Exclusive'],
   accessories: ['New', 'Trending', 'Exclusive'],
@@ -42,7 +42,8 @@ const CATEGORY_TAGS: Record<string, string[]> = {
   electronics: ['New', 'Trending', 'Exclusive'],
 }
 
-export default function ProductForm({ product }: { product?: Product }) {
+export default function ProductForm({ product, categoryTags }: { product?: Product; categoryTags?: Record<string, string[]> }) {
+  const CATEGORY_TAGS = categoryTags ?? FALLBACK_CATEGORY_TAGS
   const [state, action] = useFormState(saveProduct, null)
   const [photos, setPhotos] = useState<string[]>(initPhotos(product))
   const [uploading, setUploading] = useState(false)

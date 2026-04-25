@@ -6,12 +6,26 @@ import type { Product } from '@/lib/types'
 
 export default async function EditProductPage({ params }: { params: { id: string } }) {
   const admin = await getAdminProfile()
-  const supabase = createServiceSupabase()
-  const { data } = await supabase.from('products').select('*').eq('id', params.id).single()
-  if (!data) notFound()
+  const service = createServiceSupabase()
 
-  // Admin mund të ndryshojë vetëm produktet e veta
+  const [{ data }, catTagResult] = await Promise.all([
+    service.from('products').select('*').eq('id', params.id).single(),
+    service.from('category_tags').select('category_id, tag_label'),
+  ])
+  const catTagRows = catTagResult.data
+
+  if (!data) notFound()
   if (admin?.role === 'admin' && data.created_by !== admin.userId) notFound()
+
+  let categoryTags: Record<string, string[]> | undefined
+  if (catTagRows && catTagRows.length > 0) {
+    const map: Record<string, string[]> = {}
+    for (const { category_id, tag_label } of catTagRows) {
+      if (!map[category_id]) map[category_id] = []
+      map[category_id].push(tag_label)
+    }
+    categoryTags = map
+  }
 
   return (
     <div>
@@ -19,7 +33,7 @@ export default async function EditProductPage({ params }: { params: { id: string
         <Link href="/admin/products" className="admin-btn-ay admin-btn-ghost">← Kthehu</Link>
         <h1 className="admin-h1-ay" style={{ margin: 0 }}>Ndrysho: {data.name}</h1>
       </div>
-      <ProductForm product={data as Product} />
+      <ProductForm product={data as Product} categoryTags={categoryTags} />
     </div>
   )
 }

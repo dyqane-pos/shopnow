@@ -1,8 +1,8 @@
 import NavBar from '@/components/layout/NavBar'
 import InfoBar from '@/components/layout/InfoBar'
 import Sidebar from '@/components/layout/Sidebar'
-import { CategoriesProvider } from '@/context/CategoriesContext'
-import { createServerSupabase } from '@/lib/supabase-server'
+import { CategoriesProvider, DEFAULT_CATEGORY_TAGS } from '@/context/CategoriesContext'
+import { createServerSupabase, createServiceSupabase } from '@/lib/supabase-server'
 import { CATEGORIES, SIDEBAR_LINKS, type Category } from '@/lib/types'
 
 const FALLBACK_PRODUCT_CATS: Category[] = CATEGORIES.map((c, i) => ({
@@ -19,6 +19,7 @@ export default async function ShopLayout({ children }: { children: React.ReactNo
   let productCats = FALLBACK_PRODUCT_CATS
   let genders = FALLBACK_GENDERS
   let sidebarLinks = FALLBACK_SIDEBAR
+  let categoryTags: Record<string, string[]> = DEFAULT_CATEGORY_TAGS
 
   try {
     const supabase = createServerSupabase()
@@ -36,8 +37,21 @@ export default async function ShopLayout({ children }: { children: React.ReactNo
     }
   } catch {}
 
+  try {
+    const service = createServiceSupabase()
+    const { data: rows } = await service.from('category_tags').select('category_id, tag_label')
+    if (rows && rows.length > 0) {
+      const map: Record<string, string[]> = {}
+      for (const { category_id, tag_label } of rows) {
+        if (!map[category_id]) map[category_id] = []
+        map[category_id].push(tag_label)
+      }
+      categoryTags = map
+    }
+  } catch {}
+
   return (
-    <CategoriesProvider productCats={productCats} genders={genders} sidebarLinks={sidebarLinks}>
+    <CategoriesProvider productCats={productCats} genders={genders} sidebarLinks={sidebarLinks} categoryTags={categoryTags}>
       <InfoBar />
       <NavBar />
       <div className="shop-wrap">

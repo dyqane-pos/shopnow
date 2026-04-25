@@ -3,16 +3,8 @@ import { useRouter, useSearchParams, usePathname } from 'next/navigation'
 import { useTransition } from 'react'
 import { useCategoriesContext } from '@/context/CategoriesContext'
 
-const CAT_SUBCATEGORIES: Record<string, string[]> = {
-  clothing:    ['New', 'Trending', 'T-shirts', 'Jeans', 'Jackets', 'Pants', 'Sweaters & hoodies', 'Underwear', 'Button-up shirts', 'Suits & jackets', 'Swimwear', 'Coats', 'Plus sizes', 'Occasions', 'Exclusive'],
-  shoes:       ['New', 'Trending', 'Exclusive'],
-  accessories: ['New', 'Trending', 'Exclusive'],
-  sports:      ['New', 'Trending', 'Exclusive'],
-  electronics: ['New', 'Trending', 'Exclusive'],
-}
-
 export default function Sidebar() {
-  const { productCats, sidebarLinks } = useCategoriesContext()
+  const { productCats, sidebarLinks, categoryTags } = useCategoriesContext()
   const params = useSearchParams()
   const pathname = usePathname()
   const router = useRouter()
@@ -37,7 +29,7 @@ export default function Sidebar() {
     <aside className="sidebar-ay">
       {cats.map(cat => {
         const isActive = activeCat === cat.id
-        const subcats = (CAT_SUBCATEGORIES[cat.id] ?? []).filter(t => availableTags.has(t))
+        const subcats = (categoryTags[cat.id] ?? []).filter(t => availableTags.has(t))
 
         return (
           <div key={cat.id}>

@@ -1,5 +1,5 @@
 'use server'
-import { createServiceSupabase } from '@/lib/supabase-server'
+import { createServiceSupabase, getAdminProfile } from '@/lib/supabase-server'
 import { revalidatePath } from 'next/cache'
 
 export async function saveCategory(_prev: unknown, formData: FormData) {
@@ -31,6 +31,19 @@ export async function deleteCategory(id: string) {
   await service.from('categories').delete().eq('id', id)
   revalidatePath('/admin/categories')
   revalidatePath('/')
+}
+
+export async function saveCategoryTags(categoryId: string, tags: string[]) {
+  const admin = await getAdminProfile()
+  if (!admin) return { error: 'Jo i autorizuar' }
+  const service = createServiceSupabase()
+  await service.from('category_tags').delete().eq('category_id', categoryId)
+  if (tags.length > 0) {
+    await service.from('category_tags').insert(tags.map(tag => ({ category_id: categoryId, tag_label: tag })))
+  }
+  revalidatePath('/admin/categories')
+  revalidatePath('/')
+  return { success: true }
 }
 
 export async function moveCategory(id: string, direction: 'up' | 'down') {
