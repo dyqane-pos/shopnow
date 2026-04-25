@@ -14,29 +14,50 @@ function initPhotos(product?: Product): string[] {
   return []
 }
 
+// Merr shtesën nga MIME type — kamera celulari nuk jep gjithmonë shtesë skedari
+function extFromFile(file: File): string {
+  const mime: Record<string, string> = {
+    'image/jpeg': 'jpg', 'image/jpg': 'jpg', 'image/png': 'png',
+    'image/webp': 'webp', 'image/heic': 'jpg', 'image/heif': 'jpg',
+    'image/gif': 'gif',
+  }
+  if (mime[file.type]) return mime[file.type]
+  const parts = file.name.split('.')
+  return parts.length > 1 ? parts.pop()! : 'jpg'
+}
+
 export default function ProductForm({ product }: { product?: Product }) {
   const [state, action] = useFormState(saveProduct, null)
   const [photos, setPhotos] = useState<string[]>(initPhotos(product))
   const [uploading, setUploading] = useState(false)
+  const [uploadError, setUploadError] = useState<string | null>(null)
   const fileRef = useRef<HTMLInputElement>(null)
   const cameraRef = useRef<HTMLInputElement>(null)
 
   const uploadFile = async (file: File) => {
-    setUploading(true)
+    setUploadError(null)
     const sb = createClient()
-    const ext = file.name.split('.').pop()
+    const ext = extFromFile(file)
     const path = `products/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
-    const { error } = await sb.storage.from('product-images').upload(path, file, { upsert: true })
-    if (!error) {
-      const { data } = sb.storage.from('product-images').getPublicUrl(path)
-      setPhotos(prev => [...prev, data.publicUrl])
+    const { error } = await sb.storage.from('product-images').upload(path, file, {
+      upsert: true,
+      contentType: file.type || 'image/jpeg',
+    })
+    if (error) {
+      setUploadError(`Ngarkimi dështoi: ${error.message}`)
+      return false
     }
-    setUploading(false)
+    const { data } = sb.storage.from('product-images').getPublicUrl(path)
+    setPhotos(prev => [...prev, data.publicUrl])
+    return true
   }
 
   const handleFiles = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files ?? [])
+    if (!files.length) return
+    setUploading(true)
     for (const file of files) await uploadFile(file)
+    setUploading(false)
     e.target.value = ''
   }
 
@@ -146,13 +167,19 @@ export default function ProductForm({ product }: { product?: Product }) {
           <input ref={cameraRef} type="file" accept="image/*" capture="environment" style={{ display: 'none' }} onChange={handleFiles} />
           <input ref={fileRef} type="file" accept="image/*" multiple style={{ display: 'none' }} onChange={handleFiles} />
 
-          <button type="button" className="admin-btn-ay admin-btn-ghost" onClick={() => cameraRef.current?.click()} disabled={uploading}>
+          <button type="button" className="admin-btn-ay admin-btn-ghost" onClick={() => { setUploadError(null); cameraRef.current?.click() }} disabled={uploading}>
             📷 Kamera
           </button>
-          <button type="button" className="admin-btn-ay admin-btn-ghost" onClick={() => fileRef.current?.click()} disabled={uploading}>
-            {uploading ? 'Duke ngarkuar...' : '🖼️ Shto foto'}
+          <button type="button" className="admin-btn-ay admin-btn-ghost" onClick={() => { setUploadError(null); fileRef.current?.click() }} disabled={uploading}>
+            {uploading ? '⏳ Duke ngarkuar...' : '🖼️ Shto foto'}
           </button>
         </div>
+
+        {uploadError && (
+          <div style={{ marginTop: '8px', padding: '8px 12px', background: '#ffebee', border: '1px solid #ffcdd2', borderRadius: 6, fontSize: '12px', color: '#c62828', fontWeight: 600 }}>
+            ⚠️ {uploadError}
+          </div>
+        )}
       </div>
 
       <div className="admin-form-row-ay">
