@@ -8,33 +8,48 @@ import { createClient } from '@/lib/supabase'
 import type { Product } from '@/lib/types'
 import { PRODUCT_TAGS } from '@/lib/types'
 
+function initPhotos(product?: Product): string[] {
+  if (product?.photos?.length) return product.photos
+  if (product?.photo_url) return [product.photo_url]
+  return []
+}
+
 export default function ProductForm({ product }: { product?: Product }) {
   const [state, action] = useFormState(saveProduct, null)
-  const [photoUrl, setPhotoUrl] = useState(product?.photo_url ?? '')
+  const [photos, setPhotos] = useState<string[]>(initPhotos(product))
   const [uploading, setUploading] = useState(false)
   const fileRef = useRef<HTMLInputElement>(null)
   const cameraRef = useRef<HTMLInputElement>(null)
 
-  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
+  const uploadFile = async (file: File) => {
     setUploading(true)
     const sb = createClient()
     const ext = file.name.split('.').pop()
-    const path = `products/${Date.now()}.${ext}`
+    const path = `products/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
     const { error } = await sb.storage.from('product-images').upload(path, file, { upsert: true })
     if (!error) {
       const { data } = sb.storage.from('product-images').getPublicUrl(path)
-      setPhotoUrl(data.publicUrl)
+      setPhotos(prev => [...prev, data.publicUrl])
     }
     setUploading(false)
+  }
+
+  const handleFiles = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files ?? [])
+    for (const file of files) await uploadFile(file)
     e.target.value = ''
   }
+
+  const removePhoto = (idx: number) =>
+    setPhotos(prev => prev.filter((_, i) => i !== idx))
+
+  const moveFirst = (idx: number) =>
+    setPhotos(prev => [prev[idx], ...prev.filter((_, i) => i !== idx)])
 
   return (
     <form action={action} className="admin-form-ay">
       {product && <input type="hidden" name="id" value={product.id} />}
-      <input type="hidden" name="photo_url" value={photoUrl} />
+      <input type="hidden" name="photos_json" value={JSON.stringify(photos)} />
 
       <div className="admin-form-row-ay">
         <label className="admin-label-ay">Emri i produktit</label>
@@ -84,42 +99,59 @@ export default function ProductForm({ product }: { product?: Product }) {
         <div className="tags-grid-ay">
           {PRODUCT_TAGS.map(tag => (
             <label key={tag} className="tag-check-ay">
-              <input
-                type="checkbox"
-                name="tags"
-                value={tag}
-                defaultChecked={product?.tags?.includes(tag) ?? false}
-              />
+              <input type="checkbox" name="tags" value={tag} defaultChecked={product?.tags?.includes(tag) ?? false} />
               {tag}
             </label>
           ))}
         </div>
       </div>
 
+      {/* Multi-photo upload */}
       <div className="admin-form-row-ay">
-        <label className="admin-label-ay">Foto produkti</label>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
-          {photoUrl && (
-            <Image src={photoUrl} alt="Preview" width={70} height={93} className="img-preview-ay" style={{ objectFit: 'cover' }} />
-          )}
-          <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-            {/* Galeria */}
-            <input ref={fileRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={handleUpload} />
-            {/* Kamera direkte — capture="environment" hap kamerën e pasme */}
-            <input ref={cameraRef} type="file" accept="image/*" capture="environment" style={{ display: 'none' }} onChange={handleUpload} />
+        <label className="admin-label-ay">
+          Fotot e produktit
+          <span style={{ fontWeight: 400, textTransform: 'none', fontSize: '11px', color: '#aaa', marginLeft: 6 }}>
+            ({photos.length} foto{photos.length !== 1 ? '' : ''} · e para = kryesorja)
+          </span>
+        </label>
 
-            <button type="button" className="admin-btn-ay admin-btn-ghost" onClick={() => cameraRef.current?.click()} disabled={uploading}>
-              📷 Kamera
-            </button>
-            <button type="button" className="admin-btn-ay admin-btn-ghost" onClick={() => fileRef.current?.click()} disabled={uploading}>
-              {uploading ? 'Duke ngarkuar...' : '🖼️ Galeria'}
-            </button>
-            {photoUrl && (
-              <button type="button" className="admin-btn-ay admin-btn-danger" onClick={() => setPhotoUrl('')}>
-                Hiq
-              </button>
-            )}
+        {/* Thumbnails */}
+        {photos.length > 0 && (
+          <div className="photos-grid-ay">
+            {photos.map((url, idx) => (
+              <div key={url + idx} className="photo-thumb-ay">
+                <div style={{ position: 'relative', width: '100%', aspectRatio: '3/4' }}>
+                  <Image src={url} alt={`Foto ${idx + 1}`} fill sizes="100px" style={{ objectFit: 'cover', borderRadius: 6 }} />
+                </div>
+                {idx === 0 && (
+                  <span className="photo-primary-badge-ay">Kryesorja</span>
+                )}
+                <div className="photo-thumb-actions-ay">
+                  {idx !== 0 && (
+                    <button type="button" title="Bëje kryesore" onClick={() => moveFirst(idx)} className="photo-action-btn-ay">
+                      ★
+                    </button>
+                  )}
+                  <button type="button" title="Hiq" onClick={() => removePhoto(idx)} className="photo-action-btn-ay danger">
+                    ×
+                  </button>
+                </div>
+              </div>
+            ))}
           </div>
+        )}
+
+        {/* Upload butona */}
+        <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginTop: photos.length ? '8px' : 0 }}>
+          <input ref={cameraRef} type="file" accept="image/*" capture="environment" style={{ display: 'none' }} onChange={handleFiles} />
+          <input ref={fileRef} type="file" accept="image/*" multiple style={{ display: 'none' }} onChange={handleFiles} />
+
+          <button type="button" className="admin-btn-ay admin-btn-ghost" onClick={() => cameraRef.current?.click()} disabled={uploading}>
+            📷 Kamera
+          </button>
+          <button type="button" className="admin-btn-ay admin-btn-ghost" onClick={() => fileRef.current?.click()} disabled={uploading}>
+            {uploading ? 'Duke ngarkuar...' : '🖼️ Shto foto'}
+          </button>
         </div>
       </div>
 

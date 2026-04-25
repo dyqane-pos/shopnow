@@ -14,6 +14,12 @@ const SECTIONS = [
   { key: 'return',  label: 'Politika e Kthimit' },
 ]
 
+function getPhotos(product: Product): string[] {
+  if (product.photos?.length) return product.photos
+  if (product.photo_url) return [product.photo_url]
+  return []
+}
+
 export default function ProductModal({ products }: { products: Product[] }) {
   const router = useRouter()
   const pathname = usePathname()
@@ -24,6 +30,7 @@ export default function ProductModal({ products }: { products: Product[] }) {
 
   const [selectedSize, setSelectedSize] = useState<string | null>(null)
   const [qty, setQty] = useState(1)
+  const [activePhoto, setActivePhoto] = useState(0)
   const [openSection, setOpenSection] = useState<string | null>(null)
 
   const modalId = params.get('modal')
@@ -38,6 +45,7 @@ export default function ProductModal({ products }: { products: Product[] }) {
     startTransition(() => router.push(`${pathname}${qs ? '?' + qs : ''}`, { scroll: false }))
   }
 
+  const photos = getPhotos(product)
   const hasSale = product.old_price != null && product.old_price > product.price
   const sizes = product.sizes ?? []
 
@@ -52,18 +60,53 @@ export default function ProductModal({ products }: { products: Product[] }) {
   }
 
   const toggle = (key: string) => setOpenSection(p => p === key ? null : key)
+  const prevPhoto = () => setActivePhoto(i => (i - 1 + photos.length) % photos.length)
+  const nextPhoto = () => setActivePhoto(i => (i + 1) % photos.length)
 
   return (
     <div className="modal-overlay-ay" onClick={close}>
       <div className="modal-panel-ay" onClick={e => e.stopPropagation()}>
         <button className="modal-close-ay" onClick={close}>×</button>
 
-        <div className="modal-img-ay" style={{ position: 'relative' }}>
-          {product.photo_url ? (
-            <Image src={product.photo_url} alt={product.name} fill sizes="480px" style={{ objectFit: 'cover' }} />
-          ) : (
-            <div style={{ width: '100%', height: '100%', background: '#f0f0ee', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ccc' }}>
-              Pa foto
+        {/* Galeria e fotografive */}
+        <div className="modal-gallery-ay">
+          <div className="modal-img-ay" style={{ position: 'relative' }}>
+            {photos.length > 0 ? (
+              <Image
+                src={photos[activePhoto]}
+                alt={product.name}
+                fill
+                sizes="480px"
+                style={{ objectFit: 'cover' }}
+              />
+            ) : (
+              <div style={{ width: '100%', height: '100%', background: '#f0f0ee', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ccc' }}>
+                Pa foto
+              </div>
+            )}
+
+            {/* Shigjeta navigimi — vetëm nëse ka >1 foto */}
+            {photos.length > 1 && (
+              <>
+                <button className="gallery-arrow-ay left" onClick={e => { e.stopPropagation(); prevPhoto() }}>‹</button>
+                <button className="gallery-arrow-ay right" onClick={e => { e.stopPropagation(); nextPhoto() }}>›</button>
+                <div className="gallery-counter-ay">{activePhoto + 1} / {photos.length}</div>
+              </>
+            )}
+          </div>
+
+          {/* Thumbnail strip */}
+          {photos.length > 1 && (
+            <div className="gallery-thumbs-ay">
+              {photos.map((url, idx) => (
+                <button
+                  key={idx}
+                  className={`gallery-thumb-ay${activePhoto === idx ? ' active' : ''}`}
+                  onClick={() => setActivePhoto(idx)}
+                >
+                  <Image src={url} alt={`Foto ${idx + 1}`} fill sizes="60px" style={{ objectFit: 'cover' }} />
+                </button>
+              ))}
             </div>
           )}
         </div>
@@ -81,7 +124,7 @@ export default function ProductModal({ products }: { products: Product[] }) {
           )}
         </div>
 
-        {/* Info badges — transport, dërgesa, kthim */}
+        {/* Info badges */}
         <div className="modal-infos-ay">
           <div className="modal-info-item-ay">
             <span className="modal-info-icon-ay">🚚</span>
@@ -105,11 +148,7 @@ export default function ProductModal({ products }: { products: Product[] }) {
             <div className="modal-field-label-ay">Madhësia</div>
             <div className="size-grid-ay">
               {sizes.map(s => (
-                <button
-                  key={s}
-                  className={`size-btn-ay${selectedSize === s ? ' selected' : ''}`}
-                  onClick={() => setSelectedSize(s)}
-                >
+                <button key={s} className={`size-btn-ay${selectedSize === s ? ' selected' : ''}`} onClick={() => setSelectedSize(s)}>
                   {s}
                 </button>
               ))}
@@ -133,7 +172,6 @@ export default function ProductModal({ products }: { products: Product[] }) {
 
         {/* Accordion seksione */}
         <div className="modal-accordions-ay">
-          {/* Përshkrimi */}
           {product.description && (
             <div className="modal-acc-ay">
               <button className="modal-acc-trigger-ay" onClick={() => toggle('desc')}>
@@ -148,7 +186,6 @@ export default function ProductModal({ products }: { products: Product[] }) {
             </div>
           )}
 
-          {/* Detaje produkti */}
           <div className="modal-acc-ay">
             <button className="modal-acc-trigger-ay" onClick={() => toggle('details')}>
               <span>{SECTIONS[1].label}</span>
@@ -164,7 +201,6 @@ export default function ProductModal({ products }: { products: Product[] }) {
             )}
           </div>
 
-          {/* Madhësia & Forma */}
           <div className="modal-acc-ay">
             <button className="modal-acc-trigger-ay" onClick={() => toggle('sizefit')}>
               <span>{SECTIONS[2].label}</span>
@@ -179,7 +215,6 @@ export default function ProductModal({ products }: { products: Product[] }) {
             )}
           </div>
 
-          {/* Kthimi */}
           <div className="modal-acc-ay">
             <button className="modal-acc-trigger-ay" onClick={() => toggle('return')}>
               <span>{SECTIONS[3].label}</span>

@@ -17,6 +17,7 @@ export interface Product {
   sizes: string[]
   tags?: string[]
   photo_url?: string | null
+  photos?: string[]
   is_sale: boolean
   is_active: boolean
   stars: number
