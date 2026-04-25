@@ -34,6 +34,14 @@ const CATEGORY_SIZES: Record<string, string> = {
   electronics: '',
 }
 
+const CATEGORY_TAGS: Record<string, string[]> = {
+  clothing:    ['New', 'Trending', 'T-shirts', 'Jeans', 'Jackets', 'Pants', 'Sweaters & hoodies', 'Underwear', 'Button-up shirts', 'Suits & jackets', 'Swimwear', 'Coats', 'Plus sizes', 'Occasions', 'Exclusive'],
+  shoes:       ['New', 'Trending', 'Exclusive'],
+  accessories: ['New', 'Trending', 'Exclusive'],
+  sports:      ['New', 'Trending', 'Exclusive'],
+  electronics: ['New', 'Trending', 'Exclusive'],
+}
+
 export default function ProductForm({ product }: { product?: Product }) {
   const [state, action] = useFormState(saveProduct, null)
   const [photos, setPhotos] = useState<string[]>(initPhotos(product))
@@ -45,6 +53,17 @@ export default function ProductForm({ product }: { product?: Product }) {
   const [sizes, setSizes] = useState(
     product?.sizes?.join(', ') ?? CATEGORY_SIZES[product?.category ?? 'clothing'] ?? ''
   )
+  const [selectedTags, setSelectedTags] = useState<string[]>(product?.tags ?? [])
+
+  const handleCategoryChange = (cat: string) => {
+    setSelectedCategory(cat)
+    if (!product) setSizes(CATEGORY_SIZES[cat] ?? '')
+    const validTags = new Set(CATEGORY_TAGS[cat] ?? [])
+    setSelectedTags(prev => prev.filter(t => validTags.has(t)))
+  }
+
+  const toggleTag = (tag: string) =>
+    setSelectedTags(prev => prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag])
 
   const uploadFile = async (file: File) => {
     setUploadError(null)
@@ -100,11 +119,7 @@ export default function ProductForm({ product }: { product?: Product }) {
             name="category"
             className="admin-select-ay"
             value={selectedCategory}
-            onChange={e => {
-              const cat = e.target.value
-              setSelectedCategory(cat)
-              if (!product) setSizes(CATEGORY_SIZES[cat] ?? '')
-            }}
+            onChange={e => handleCategoryChange(e.target.value)}
           >
             <option value="clothing">Veshje</option>
             <option value="shoes">Këpucë</option>
@@ -176,9 +191,15 @@ export default function ProductForm({ product }: { product?: Product }) {
       <div className="admin-form-row-ay">
         <label className="admin-label-ay">Kategoritë e sidebarit</label>
         <div className="tags-grid-ay">
-          {PRODUCT_TAGS.map(tag => (
+          {(CATEGORY_TAGS[selectedCategory] ?? []).map(tag => (
             <label key={tag} className="tag-check-ay">
-              <input type="checkbox" name="tags" value={tag} defaultChecked={product?.tags?.includes(tag) ?? false} />
+              <input
+                type="checkbox"
+                name="tags"
+                value={tag}
+                checked={selectedTags.includes(tag)}
+                onChange={() => toggleTag(tag)}
+              />
               {tag}
             </label>
           ))}
