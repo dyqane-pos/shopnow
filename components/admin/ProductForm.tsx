@@ -12,6 +12,7 @@ export default function ProductForm({ product }: { product?: Product }) {
   const [photoUrl, setPhotoUrl] = useState(product?.photo_url ?? '')
   const [uploading, setUploading] = useState(false)
   const fileRef = useRef<HTMLInputElement>(null)
+  const cameraRef = useRef<HTMLInputElement>(null)
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -26,6 +27,7 @@ export default function ProductForm({ product }: { product?: Product }) {
       setPhotoUrl(data.publicUrl)
     }
     setUploading(false)
+    e.target.value = ''
   }
 
   return (
@@ -82,13 +84,20 @@ export default function ProductForm({ product }: { product?: Product }) {
           {photoUrl && (
             <Image src={photoUrl} alt="Preview" width={70} height={93} className="img-preview-ay" style={{ objectFit: 'cover' }} />
           )}
-          <div>
+          <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+            {/* Galeria */}
             <input ref={fileRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={handleUpload} />
+            {/* Kamera direkte — capture="environment" hap kamerën e pasme */}
+            <input ref={cameraRef} type="file" accept="image/*" capture="environment" style={{ display: 'none' }} onChange={handleUpload} />
+
+            <button type="button" className="admin-btn-ay admin-btn-ghost" onClick={() => cameraRef.current?.click()} disabled={uploading}>
+              📷 Kamera
+            </button>
             <button type="button" className="admin-btn-ay admin-btn-ghost" onClick={() => fileRef.current?.click()} disabled={uploading}>
-              {uploading ? 'Duke ngarkuar...' : photoUrl ? 'Ndrysho foton' : 'Ngarko foto'}
+              {uploading ? 'Duke ngarkuar...' : '🖼️ Galeria'}
             </button>
             {photoUrl && (
-              <button type="button" className="admin-btn-ay admin-btn-danger" style={{ marginLeft: '6px' }} onClick={() => setPhotoUrl('')}>
+              <button type="button" className="admin-btn-ay admin-btn-danger" onClick={() => setPhotoUrl('')}>
                 Hiq
               </button>
             )}
