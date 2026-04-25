@@ -15,6 +15,8 @@ interface SearchParams {
   sidebar?: string
   size?: string
   brand?: string
+  color?: string
+  material?: string
   minPrice?: string
   maxPrice?: string
   view?: string
@@ -48,6 +50,12 @@ export default async function ShopPage({ searchParams }: { searchParams: SearchP
     if (searchParams.brand) {
       query = query.eq('brand', searchParams.brand)
     }
+    if (searchParams.color) {
+      query = query.eq('color', searchParams.color)
+    }
+    if (searchParams.material) {
+      query = query.eq('material', searchParams.material)
+    }
     if (searchParams.minPrice) {
       query = query.gte('price', Number(searchParams.minPrice))
     }
@@ -75,13 +83,15 @@ export default async function ShopPage({ searchParams }: { searchParams: SearchP
     return a.localeCompare(b, undefined, { numeric: true })
   })
 
-  const brands = [...new Set(products.map(p => p.brand))].sort()
+  const brands    = [...new Set(products.map(p => p.brand))].sort()
+  const colors    = [...new Set(products.map(p => p.color).filter(Boolean) as string[])].sort()
+  const materials = [...new Set(products.map(p => p.material).filter(Boolean) as string[])].sort()
   const view = searchParams.view === 'list' ? 'list' : 'grid'
 
   return (
     <>
       <PageHeader total={products.length} />
-      <FilterBar total={products.length} sizes={sizes} brands={brands} view={view} />
+      <FilterBar total={products.length} sizes={sizes} brands={brands} colors={colors} materials={materials} view={view} />
       <ProductGrid products={products} view={view} />
       {searchParams.modal && <ProductModal products={products} />}
     </>

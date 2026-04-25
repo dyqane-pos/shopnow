@@ -3,11 +3,14 @@ import { useRouter, useSearchParams, usePathname } from 'next/navigation'
 import { useTransition, useState, useRef, useEffect } from 'react'
 import { useCategoriesContext } from '@/context/CategoriesContext'
 import { useLang } from '@/context/LanguageContext'
+import { COLOR_HEX } from '@/lib/types'
 
-export default function FilterBar({ total, sizes, brands, view }: {
+export default function FilterBar({ total, sizes, brands, colors, materials, view }: {
   total: number
   sizes: string[]
   brands: string[]
+  colors: string[]
+  materials: string[]
   view: 'grid' | 'list'
 }) {
   const { productCats } = useCategoriesContext()
@@ -22,9 +25,11 @@ export default function FilterBar({ total, sizes, brands, view }: {
   const sort = params.get('sort') ?? ''
   const activeSize = params.get('size') ?? ''
   const activeBrand = params.get('brand') ?? ''
+  const activeColor = params.get('color') ?? ''
+  const activeMaterial = params.get('material') ?? ''
   const [minVal, setMinVal] = useState(params.get('minPrice') ?? '')
   const [maxVal, setMaxVal] = useState(params.get('maxPrice') ?? '')
-  const [openDrop, setOpenDrop] = useState<'size' | 'brand' | 'price' | null>(null)
+  const [openDrop, setOpenDrop] = useState<'size' | 'brand' | 'color' | 'material' | 'price' | null>(null)
   const dropRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -48,7 +53,7 @@ export default function FilterBar({ total, sizes, brands, view }: {
     setOpenDrop(null)
   }
 
-  const hasActiveFilters = isSale || activeSize || activeBrand || params.get('minPrice') || params.get('maxPrice')
+  const hasActiveFilters = isSale || activeSize || activeBrand || activeColor || activeMaterial || params.get('minPrice') || params.get('maxPrice')
 
   return (
     <div>
@@ -178,6 +183,60 @@ export default function FilterBar({ total, sizes, brands, view }: {
           )}
         </div>
 
+        {/* Color dropdown */}
+        <div style={{ position: 'relative' }}>
+          <button
+            className={`filter-chip-ay${activeColor ? ' active' : ''}`}
+            onClick={() => colors.length > 0 ? setOpenDrop(openDrop === 'color' ? null : 'color') : undefined}
+            style={colors.length === 0 ? { opacity: 0.4, cursor: 'default' } : {}}
+          >
+            {activeColor || t('filterColor')} ▾
+          </button>
+          {openDrop === 'color' && colors.length > 0 && (
+            <div className="filter-drop-ay" style={{ minWidth: 200 }}>
+              <div style={{ fontWeight: 700, fontSize: '11px', marginBottom: '10px', color: '#888', letterSpacing: '.5px', textTransform: 'uppercase' }}>{t('filterColor')}</div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                {colors.map(c => (
+                  <button
+                    key={c}
+                    onClick={() => { push({ color: activeColor === c ? null : c }); setOpenDrop(null) }}
+                    style={{ display: 'flex', alignItems: 'center', gap: '10px', textAlign: 'left', padding: '4px 6px', borderRadius: 5, fontWeight: activeColor === c ? 700 : 400, background: activeColor === c ? '#f0f0f0' : 'transparent', fontSize: '13px' }}
+                  >
+                    <span style={{ width: 16, height: 16, borderRadius: '50%', flexShrink: 0, border: '1px solid #ddd', background: COLOR_HEX[c] ?? '#ccc', display: 'inline-block' }} />
+                    {c}
+                  </button>
+                ))}
+              </div>
+              {activeColor && <button onClick={() => { push({ color: null }); setOpenDrop(null) }} style={{ marginTop: '10px', fontSize: '11px', color: '#888', textDecoration: 'underline' }}>{t('filterClear')}</button>}
+            </div>
+          )}
+        </div>
+
+        {/* Material dropdown */}
+        <div style={{ position: 'relative' }}>
+          <button
+            className={`filter-chip-ay${activeMaterial ? ' active' : ''}`}
+            onClick={() => materials.length > 0 ? setOpenDrop(openDrop === 'material' ? null : 'material') : undefined}
+            style={materials.length === 0 ? { opacity: 0.4, cursor: 'default' } : {}}
+          >
+            {activeMaterial || t('filterMaterial')} ▾
+          </button>
+          {openDrop === 'material' && materials.length > 0 && (
+            <div className="filter-drop-ay" style={{ minWidth: 180, maxHeight: 260, overflowY: 'auto' }}>
+              <div style={{ fontWeight: 700, fontSize: '11px', marginBottom: '8px', color: '#888', letterSpacing: '.5px', textTransform: 'uppercase' }}>{t('filterMaterial')}</div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                {materials.map(m => (
+                  <button key={m} onClick={() => { push({ material: activeMaterial === m ? null : m }); setOpenDrop(null) }}
+                    style={{ textAlign: 'left', padding: '5px 8px', borderRadius: 5, fontSize: '13px', fontWeight: activeMaterial === m ? 700 : 400, background: activeMaterial === m ? '#f0f0f0' : 'transparent' }}>
+                    {m}
+                  </button>
+                ))}
+              </div>
+              {activeMaterial && <button onClick={() => { push({ material: null }); setOpenDrop(null) }} style={{ marginTop: '10px', fontSize: '11px', color: '#888', textDecoration: 'underline' }}>{t('filterClear')}</button>}
+            </div>
+          )}
+        </div>
+
         {/* Price dropdown */}
         <div style={{ position: 'relative' }}>
           <button
@@ -233,7 +292,7 @@ export default function FilterBar({ total, sizes, brands, view }: {
         {hasActiveFilters && (
           <button
             style={{ fontSize: '11px', color: '#e8002d', fontWeight: 600, marginLeft: '4px' }}
-            onClick={() => { setMinVal(''); setMaxVal(''); push({ sale: null, size: null, brand: null, minPrice: null, maxPrice: null }) }}
+            onClick={() => { setMinVal(''); setMaxVal(''); push({ sale: null, size: null, brand: null, color: null, material: null, minPrice: null, maxPrice: null }) }}
           >
             {t('filterClearAll')}
           </button>

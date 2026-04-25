@@ -6,7 +6,7 @@ import { saveProduct } from '@/actions/products'
 import SubmitButton from '@/components/ui/SubmitButton'
 import { createClient } from '@/lib/supabase'
 import type { Product } from '@/lib/types'
-import { PRODUCT_TAGS } from '@/lib/types'
+import { PRODUCT_TAGS, PRODUCT_COLORS, PRODUCT_MATERIALS } from '@/lib/types'
 
 function initPhotos(product?: Product): string[] {
   if (product?.photos?.length) return product.photos
@@ -148,6 +148,23 @@ export default function ProductForm({ product, categoryTags }: { product?: Produ
               </label>
             )
           })}
+        </div>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+        <div className="admin-form-row-ay">
+          <label className="admin-label-ay">Ngjyra</label>
+          <select name="color" className="admin-select-ay" defaultValue={product?.color ?? ''}>
+            <option value="">— Pa ngjyrë —</option>
+            {PRODUCT_COLORS.map(c => <option key={c} value={c}>{c}</option>)}
+          </select>
+        </div>
+        <div className="admin-form-row-ay">
+          <label className="admin-label-ay">Materiali</label>
+          <select name="material" className="admin-select-ay" defaultValue={product?.material ?? ''}>
+            <option value="">— Pa material —</option>
+            {PRODUCT_MATERIALS.map(m => <option key={m} value={m}>{m}</option>)}
+          </select>
         </div>
       </div>
 
