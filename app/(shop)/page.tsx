@@ -37,7 +37,7 @@ export default async function ShopPage({ searchParams }: { searchParams: SearchP
       query = query.or(`name.ilike.%${searchParams.q}%,brand.ilike.%${searchParams.q}%`)
     }
     if (searchParams.gender) {
-      query = query.eq('gender', searchParams.gender)
+      query = query.in('gender', [searchParams.gender.toLowerCase(), 'unisex'])
     }
     if (searchParams.sidebar) {
       query = query.contains('tags', [searchParams.sidebar])
