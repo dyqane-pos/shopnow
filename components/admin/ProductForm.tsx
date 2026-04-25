@@ -6,6 +6,7 @@ import { saveProduct } from '@/actions/products'
 import SubmitButton from '@/components/ui/SubmitButton'
 import { createClient } from '@/lib/supabase'
 import type { Product } from '@/lib/types'
+import { PRODUCT_TAGS } from '@/lib/types'
 
 export default function ProductForm({ product }: { product?: Product }) {
   const [state, action] = useFormState(saveProduct, null)
@@ -76,6 +77,23 @@ export default function ProductForm({ product }: { product?: Product }) {
       <div className="admin-form-row-ay">
         <label className="admin-label-ay">Madhësitë (me presje)</label>
         <input name="sizes" className="admin-input-ay" defaultValue={product?.sizes?.join(', ') ?? 'S, M, L, XL'} placeholder="S, M, L, XL" />
+      </div>
+
+      <div className="admin-form-row-ay">
+        <label className="admin-label-ay">Kategoritë e sidebarit</label>
+        <div className="tags-grid-ay">
+          {PRODUCT_TAGS.map(tag => (
+            <label key={tag} className="tag-check-ay">
+              <input
+                type="checkbox"
+                name="tags"
+                value={tag}
+                defaultChecked={product?.tags?.includes(tag) ?? false}
+              />
+              {tag}
+            </label>
+          ))}
+        </div>
       </div>
 
       <div className="admin-form-row-ay">

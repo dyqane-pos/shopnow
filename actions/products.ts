@@ -11,6 +11,7 @@ export async function saveProduct(_prev: unknown, formData: FormData) {
 
   const id = formData.get('id') as string | null
   const sizes = (formData.get('sizes') as string).split(',').map(s => s.trim()).filter(Boolean)
+  const tags = formData.getAll('tags') as string[]
 
   const payload = {
     name: formData.get('name') as string,
@@ -21,6 +22,7 @@ export async function saveProduct(_prev: unknown, formData: FormData) {
     old_price: formData.get('old_price') ? Number(formData.get('old_price')) : null,
     description: formData.get('description') as string,
     sizes,
+    tags,
     photo_url: formData.get('photo_url') as string || null,
     is_sale: formData.get('is_sale') === 'true',
     stars: Number(formData.get('stars') || 5),

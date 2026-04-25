@@ -945,6 +945,31 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   outline: none;
 }
 
+.tags-grid-ay {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px 12px;
+  padding: 10px 12px;
+  background: #fafaf9;
+  border: 1.5px solid #e8e8e4;
+  border-radius: 8px;
+}
+.tag-check-ay {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12.5px;
+  color: #444;
+  cursor: pointer;
+  padding: 3px 0;
+}
+.tag-check-ay input[type="checkbox"] {
+  width: 15px; height: 15px;
+  accent-color: #1a1a1a;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
 .img-preview-ay {
   width: 90px;
   aspect-ratio: 3/4;

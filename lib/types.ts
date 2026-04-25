@@ -15,6 +15,7 @@ export interface Product {
   old_price?: number | null
   description?: string
   sizes: string[]
+  tags?: string[]
   photo_url?: string | null
   is_sale: boolean
   is_active: boolean
@@ -81,5 +82,7 @@ export const CATEGORIES = [
 export const SIDEBAR_LINKS = [
   'New', 'Trending', 'T-shirts', 'Jeans', 'Jackets',
   'Pants', 'Sweaters & hoodies', 'Underwear', 'Button-up shirts',
-  'Suits & jackets', 'Swimwear', 'Coats', 'Plus sizes', 'Occasions', 'Exclusive'
+  'Suits & jackets', 'Swimwear', 'Coats', 'Plus sizes', 'Occasions', 'Exclusive',
 ]
+
+export const PRODUCT_TAGS = SIDEBAR_LINKS

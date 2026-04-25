@@ -40,10 +40,7 @@ export default async function ShopPage({ searchParams }: { searchParams: SearchP
       query = query.eq('gender', searchParams.gender)
     }
     if (searchParams.sidebar) {
-      const s = searchParams.sidebar
-      if (s !== 'New' && s !== 'Trending') {
-        query = query.or(`name.ilike.%${s}%,brand.ilike.%${s}%`)
-      }
+      query = query.contains('tags', [searchParams.sidebar])
     }
     if (searchParams.size) {
       query = query.contains('sizes', [searchParams.size])
