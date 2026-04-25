@@ -5,6 +5,8 @@ import ProductModal from '@/components/shop/ProductModal'
 import PageHeader from '@/components/shop/PageHeader'
 import type { Product } from '@/lib/types'
 
+export const dynamic = 'force-dynamic'
+
 interface SearchParams {
   cat?: string
   sale?: string
@@ -71,9 +73,12 @@ export default async function ShopPage({ searchParams }: { searchParams: SearchP
       default: query = query.order('views', { ascending: false })
     }
 
-    const { data } = await query
+    const { data, error } = await query
+    if (error) console.error('[shop] Supabase query error:', error)
     products = data ?? []
-  } catch {}
+  } catch (err) {
+    console.error('[shop] Caught exception:', err)
+  }
 
   const sizes = [...new Set(products.flatMap(p => p.sizes ?? []))].sort((a, b) => {
     const order = ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL']
