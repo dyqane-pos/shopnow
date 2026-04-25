@@ -1,51 +1,69 @@
 'use client'
 import { useRouter, useSearchParams, usePathname } from 'next/navigation'
 import { useTransition } from 'react'
-import type { Category } from '@/lib/types'
-import { useLang } from '@/context/LanguageContext'
+import { useCategoriesContext } from '@/context/CategoriesContext'
 
-export default function Sidebar({ links }: { links: Category[] }) {
-  const { t } = useLang()
+const CAT_SUBCATEGORIES: Record<string, string[]> = {
+  clothing:    ['New', 'Trending', 'T-shirts', 'Jeans', 'Jackets', 'Pants', 'Sweaters & hoodies', 'Underwear', 'Button-up shirts', 'Suits & jackets', 'Swimwear', 'Coats', 'Plus sizes', 'Occasions', 'Exclusive'],
+  shoes:       ['New', 'Trending', 'Exclusive'],
+  accessories: ['New', 'Trending', 'Exclusive'],
+  sports:      ['New', 'Trending', 'Exclusive'],
+  electronics: ['New', 'Trending', 'Exclusive'],
+}
+
+export default function Sidebar() {
+  const { productCats, sidebarLinks } = useCategoriesContext()
   const params = useSearchParams()
   const pathname = usePathname()
   const router = useRouter()
   const [, startTransition] = useTransition()
 
+  const activeCat     = params.get('cat') ?? 'all'
   const activeSidebar = params.get('sidebar')
 
-  const push = (label: string) => {
+  const push = (updates: Record<string, string | null>) => {
     const next = new URLSearchParams(params.toString())
-    if (next.get('sidebar') === label) {
-      next.delete('sidebar')
-    } else {
-      next.set('sidebar', label)
+    for (const [k, v] of Object.entries(updates)) {
+      if (v === null) next.delete(k); else next.set(k, v)
     }
     next.delete('modal')
     startTransition(() => router.push(`${pathname}?${next.toString()}`, { scroll: false }))
   }
 
-  const sections = [
-    { title: t('sbExplore'),    items: links.slice(0, 2) },
-    { title: t('sbCategories'), items: links.slice(2, 10) },
-    { title: t('sbStyle'),      items: links.slice(10) },
-  ].filter(s => s.items.length > 0)
+  const availableTags = new Set(sidebarLinks.map(l => l.label))
+  const cats = productCats.filter(c => c.id !== 'all')
 
   return (
     <aside className="sidebar-ay">
-      {sections.map(section => (
-        <div key={section.title} className="sb-section-ay">
-          <div className="sb-section-title">{section.title}</div>
-          {section.items.map(link => (
+      {cats.map(cat => {
+        const isActive = activeCat === cat.id
+        const subcats = (CAT_SUBCATEGORIES[cat.id] ?? []).filter(t => availableTags.has(t))
+
+        return (
+          <div key={cat.id}>
             <button
-              key={link.id}
-              onClick={() => push(link.label)}
-              className={`sb-link-ay${activeSidebar === link.label ? ' active' : ''}`}
+              onClick={() => push({ cat: isActive ? 'all' : cat.id, sidebar: null })}
+              className={`sb-cat-ay${isActive ? ' active' : ''}`}
             >
-              {link.label}
+              {cat.label}
             </button>
-          ))}
-        </div>
-      ))}
+
+            {isActive && subcats.length > 0 && (
+              <div className="sb-subcats-ay">
+                {subcats.map(tag => (
+                  <button
+                    key={tag}
+                    onClick={() => push({ sidebar: activeSidebar === tag ? null : tag })}
+                    className={`sb-link-ay${activeSidebar === tag ? ' active' : ''}`}
+                  >
+                    {tag}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        )
+      })}
     </aside>
   )
 }

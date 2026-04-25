@@ -41,7 +41,7 @@ export default async function ShopLayout({ children }: { children: React.ReactNo
       <InfoBar />
       <NavBar />
       <div className="shop-wrap">
-        <Sidebar links={sidebarLinks} />
+        <Sidebar />
         <main className="main-ay">{children}</main>
       </div>
     </CategoriesProvider>
