@@ -26,6 +26,14 @@ function extFromFile(file: File): string {
   return parts.length > 1 ? parts.pop()! : 'jpg'
 }
 
+const CATEGORY_SIZES: Record<string, string> = {
+  clothing: 'XS, S, M, L, XL, XXL',
+  shoes: '36, 37, 38, 39, 40, 41, 42, 43, 44, 45',
+  sports: 'XS, S, M, L, XL, XXL',
+  accessories: '',
+  electronics: '',
+}
+
 export default function ProductForm({ product }: { product?: Product }) {
   const [state, action] = useFormState(saveProduct, null)
   const [photos, setPhotos] = useState<string[]>(initPhotos(product))
@@ -33,6 +41,10 @@ export default function ProductForm({ product }: { product?: Product }) {
   const [uploadError, setUploadError] = useState<string | null>(null)
   const fileRef = useRef<HTMLInputElement>(null)
   const cameraRef = useRef<HTMLInputElement>(null)
+  const [selectedCategory, setSelectedCategory] = useState(product?.category ?? 'clothing')
+  const [sizes, setSizes] = useState(
+    product?.sizes?.join(', ') ?? CATEGORY_SIZES[product?.category ?? 'clothing'] ?? ''
+  )
 
   const uploadFile = async (file: File) => {
     setUploadError(null)
@@ -84,7 +96,16 @@ export default function ProductForm({ product }: { product?: Product }) {
         </div>
         <div className="admin-form-row-ay">
           <label className="admin-label-ay">Kategoria</label>
-          <select name="category" className="admin-select-ay" defaultValue={product?.category ?? 'clothing'}>
+          <select
+            name="category"
+            className="admin-select-ay"
+            value={selectedCategory}
+            onChange={e => {
+              const cat = e.target.value
+              setSelectedCategory(cat)
+              if (!product) setSizes(CATEGORY_SIZES[cat] ?? '')
+            }}
+          >
             <option value="clothing">Veshje</option>
             <option value="shoes">Këpucë</option>
             <option value="accessories">Aksesore</option>
@@ -131,8 +152,25 @@ export default function ProductForm({ product }: { product?: Product }) {
       </div>
 
       <div className="admin-form-row-ay">
-        <label className="admin-label-ay">Madhësitë (me presje)</label>
-        <input name="sizes" className="admin-input-ay" defaultValue={product?.sizes?.join(', ') ?? 'S, M, L, XL'} placeholder="S, M, L, XL" />
+        <label className="admin-label-ay">
+          Madhësitë (me presje)
+          {product && (
+            <button
+              type="button"
+              onClick={() => setSizes(CATEGORY_SIZES[selectedCategory] ?? '')}
+              style={{ marginLeft: 8, fontSize: '10px', fontWeight: 600, color: '#888', textDecoration: 'underline', background: 'none', border: 'none', cursor: 'pointer', textTransform: 'none', letterSpacing: 0 }}
+            >
+              Reset sipas kategorisë
+            </button>
+          )}
+        </label>
+        <input
+          name="sizes"
+          className="admin-input-ay"
+          value={sizes}
+          onChange={e => setSizes(e.target.value)}
+          placeholder={selectedCategory === 'shoes' ? '36, 37, 38, 39, 40, 41, 42, 43, 44, 45' : 'XS, S, M, L, XL, XXL'}
+        />
       </div>
 
       <div className="admin-form-row-ay">

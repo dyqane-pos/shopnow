@@ -7,6 +7,7 @@ import { fmt, disc } from '@/lib/utils'
 import { useCart } from '@/hooks/useCart'
 import { useToast } from '@/hooks/useToast'
 import { useLang } from '@/context/LanguageContext'
+import { useProductPresence } from '@/hooks/useProductPresence'
 
 function getPhotos(product: Product): string[] {
   if (product.photos?.length) return product.photos
@@ -30,6 +31,8 @@ export default function ProductModal({ products }: { products: Product[] }) {
 
   const modalId = params.get('modal')
   const product = products.find(p => String(p.id) === modalId)
+
+  useProductPresence(product?.id ?? null)
 
   if (!product) return null
 

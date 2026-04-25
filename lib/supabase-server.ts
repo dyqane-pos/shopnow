@@ -41,3 +41,16 @@ export function createServiceSupabase() {
     }
   )
 }
+
+/** Kthen { user, role } nëse i autentikuar si admin/superadmin, ose null */
+export async function getAdminProfile(): Promise<{ userId: string; role: 'admin' | 'superadmin' } | null> {
+  const supabase = createServerSupabase()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return null
+
+  const service = createServiceSupabase()
+  const { data } = await service.from('profiles').select('role').eq('id', user.id).single()
+  if (!data || !['admin', 'superadmin'].includes(data.role)) return null
+
+  return { userId: user.id, role: data.role as 'admin' | 'superadmin' }
+}

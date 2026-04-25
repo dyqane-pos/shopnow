@@ -986,6 +986,31 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 }
 .admin-table-ay tr:hover td { background: #fafaf8; }
 
+.live-badge-ay {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: #e8f5e9;
+  color: #2e7d32;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+.live-dot-ay {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #2e7d32;
+  flex-shrink: 0;
+  animation: live-pulse 1.6s ease-in-out infinite;
+}
+@keyframes live-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: .4; transform: scale(.7); }
+}
+
 .admin-btn-ay {
   font-size: 11px;
   font-weight: 700;

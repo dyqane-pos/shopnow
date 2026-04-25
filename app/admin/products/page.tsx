@@ -1,13 +1,19 @@
-import { createServiceSupabase } from '@/lib/supabase-server'
+import { createServiceSupabase, getAdminProfile } from '@/lib/supabase-server'
 import ProductTable from '@/components/admin/ProductTable'
 import Link from 'next/link'
 import type { Product } from '@/lib/types'
 
 export default async function AdminProductsPage() {
+  const admin = await getAdminProfile()
   let products: Product[] = []
   try {
     const supabase = createServiceSupabase()
-    const { data } = await supabase.from('products').select('*').order('created_at', { ascending: false })
+    let query = supabase.from('products').select('*').order('created_at', { ascending: false })
+    // Admin sheh vetëm produktet e veta; superadmin sheh të gjitha
+    if (admin?.role === 'admin') {
+      query = query.eq('created_by', admin.userId)
+    }
+    const { data } = await query
     products = data ?? []
   } catch {}
 

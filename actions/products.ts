@@ -1,15 +1,33 @@
 'use server'
-import { createServerSupabase, createServiceSupabase } from '@/lib/supabase-server'
+import { createServiceSupabase, getAdminProfile } from '@/lib/supabase-server'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 
+async function verifyOwnership(productId: number | string): Promise<{ userId: string; role: 'admin' | 'superadmin' } | { error: string }> {
+  const admin = await getAdminProfile()
+  if (!admin) return { error: 'Jo i autorizuar' }
+  if (admin.role === 'superadmin') return admin
+
+  const service = createServiceSupabase()
+  const { data } = await service.from('products').select('created_by').eq('id', productId).single()
+  if (!data) return { error: 'Produkti nuk u gjet' }
+  if (data.created_by !== admin.userId) return { error: 'Nuk keni leje për këtë produkt' }
+
+  return admin
+}
+
 export async function saveProduct(_prev: unknown, formData: FormData) {
-  // Verifiko autentikimin me anon client
-  const supabase = createServerSupabase()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return { error: 'Jo i autorizuar' }
+  const admin = await getAdminProfile()
+  if (!admin) return { error: 'Jo i autorizuar' }
 
   const id = formData.get('id') as string | null
+
+  // Nëse është update, verifiko ownership
+  if (id) {
+    const check = await verifyOwnership(id)
+    if ('error' in check) return check
+  }
+
   const sizes = (formData.get('sizes') as string).split(',').map(s => s.trim()).filter(Boolean)
   const tags = formData.getAll('tags') as string[]
   const photosRaw = formData.get('photos_json') as string
@@ -33,14 +51,13 @@ export async function saveProduct(_prev: unknown, formData: FormData) {
     updated_at: new Date().toISOString(),
   }
 
-  // Përdor service role për të kaluar RLS (shmang recursion-in)
   const service = createServiceSupabase()
   let error
   if (id) {
     const { error: e } = await service.from('products').update(payload).eq('id', id)
     error = e
   } else {
-    const { error: e } = await service.from('products').insert({ ...payload, is_active: true, views: 0, created_by: user.id })
+    const { error: e } = await service.from('products').insert({ ...payload, is_active: true, views: 0, created_by: admin.userId })
     error = e
   }
 
@@ -51,6 +68,9 @@ export async function saveProduct(_prev: unknown, formData: FormData) {
 }
 
 export async function deleteProduct(id: number) {
+  const check = await verifyOwnership(id)
+  if ('error' in check) return
+
   const service = createServiceSupabase()
   await service.from('products').delete().eq('id', id)
   revalidatePath('/admin/products')
@@ -58,6 +78,9 @@ export async function deleteProduct(id: number) {
 }
 
 export async function toggleActive(id: number, current: boolean) {
+  const check = await verifyOwnership(id)
+  if ('error' in check) return
+
   const service = createServiceSupabase()
   await service.from('products').update({ is_active: !current }).eq('id', id)
   revalidatePath('/admin/products')
