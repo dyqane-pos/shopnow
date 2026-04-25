@@ -105,80 +105,78 @@ export default function FilterBar({ total, sizes, brands, view }: {
       {/* Row 2: advanced filters */}
       <div className="filter-row-ay" ref={dropRef} style={{ position: 'relative' }}>
         {/* Size dropdown */}
-        {sizes.length > 0 && (
-          <div style={{ position: 'relative' }}>
-            <button
-              className={`filter-chip-ay${activeSize ? ' active' : ''}`}
-              onClick={() => setOpenDrop(openDrop === 'size' ? null : 'size')}
-            >
-              {activeSize ? `${t('filterSize')}: ${activeSize}` : t('filterSize')} ▾
-            </button>
-            {openDrop === 'size' && (
-              <div className="filter-drop-ay">
-                <div style={{ fontWeight: 700, fontSize: '11px', marginBottom: '8px', color: '#888', letterSpacing: '.5px', textTransform: 'uppercase' }}>{t('filterSize')}</div>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
-                  {sizes.map(s => (
-                    <button
-                      key={s}
-                      className={`size-btn-ay${activeSize === s ? ' selected' : ''}`}
-                      onClick={() => { push({ size: activeSize === s ? null : s }); setOpenDrop(null) }}
-                    >
-                      {s}
-                    </button>
-                  ))}
-                </div>
-                {activeSize && (
+        <div style={{ position: 'relative' }}>
+          <button
+            className={`filter-chip-ay${activeSize ? ' active' : ''}`}
+            onClick={() => sizes.length > 0 ? setOpenDrop(openDrop === 'size' ? null : 'size') : undefined}
+            style={sizes.length === 0 ? { opacity: 0.4, cursor: 'default' } : {}}
+          >
+            {activeSize ? `${t('filterSize')}: ${activeSize}` : t('filterSize')} ▾
+          </button>
+          {openDrop === 'size' && sizes.length > 0 && (
+            <div className="filter-drop-ay">
+              <div style={{ fontWeight: 700, fontSize: '11px', marginBottom: '8px', color: '#888', letterSpacing: '.5px', textTransform: 'uppercase' }}>{t('filterSize')}</div>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                {sizes.map(s => (
                   <button
-                    onClick={() => { push({ size: null }); setOpenDrop(null) }}
-                    style={{ marginTop: '10px', fontSize: '11px', color: '#888', textDecoration: 'underline' }}
+                    key={s}
+                    className={`size-btn-ay${activeSize === s ? ' selected' : ''}`}
+                    onClick={() => { push({ size: activeSize === s ? null : s }); setOpenDrop(null) }}
                   >
-                    {t('filterClear')}
+                    {s}
                   </button>
-                )}
+                ))}
               </div>
-            )}
-          </div>
-        )}
+              {activeSize && (
+                <button
+                  onClick={() => { push({ size: null }); setOpenDrop(null) }}
+                  style={{ marginTop: '10px', fontSize: '11px', color: '#888', textDecoration: 'underline' }}
+                >
+                  {t('filterClear')}
+                </button>
+              )}
+            </div>
+          )}
+        </div>
 
         {/* Brand dropdown */}
-        {brands.length > 0 && (
-          <div style={{ position: 'relative' }}>
-            <button
-              className={`filter-chip-ay${activeBrand ? ' active' : ''}`}
-              onClick={() => setOpenDrop(openDrop === 'brand' ? null : 'brand')}
-            >
-              {activeBrand || t('filterBrand')} ▾
-            </button>
-            {openDrop === 'brand' && (
-              <div className="filter-drop-ay" style={{ minWidth: 200, maxHeight: 260, overflowY: 'auto' }}>
-                <div style={{ fontWeight: 700, fontSize: '11px', marginBottom: '8px', color: '#888', letterSpacing: '.5px', textTransform: 'uppercase' }}>{t('filterBrand')}</div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                  {brands.map(b => (
-                    <button
-                      key={b}
-                      onClick={() => { push({ brand: activeBrand === b ? null : b }); setOpenDrop(null) }}
-                      style={{
-                        textAlign: 'left', padding: '5px 8px', borderRadius: 5, fontSize: '13px',
-                        fontWeight: activeBrand === b ? 700 : 400,
-                        background: activeBrand === b ? '#f0f0f0' : 'transparent',
-                      }}
-                    >
-                      {b}
-                    </button>
-                  ))}
-                </div>
-                {activeBrand && (
+        <div style={{ position: 'relative' }}>
+          <button
+            className={`filter-chip-ay${activeBrand ? ' active' : ''}`}
+            onClick={() => brands.length > 0 ? setOpenDrop(openDrop === 'brand' ? null : 'brand') : undefined}
+            style={brands.length === 0 ? { opacity: 0.4, cursor: 'default' } : {}}
+          >
+            {activeBrand || t('filterBrand')} ▾
+          </button>
+          {openDrop === 'brand' && brands.length > 0 && (
+            <div className="filter-drop-ay" style={{ minWidth: 200, maxHeight: 260, overflowY: 'auto' }}>
+              <div style={{ fontWeight: 700, fontSize: '11px', marginBottom: '8px', color: '#888', letterSpacing: '.5px', textTransform: 'uppercase' }}>{t('filterBrand')}</div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                {brands.map(b => (
                   <button
-                    onClick={() => { push({ brand: null }); setOpenDrop(null) }}
-                    style={{ marginTop: '10px', fontSize: '11px', color: '#888', textDecoration: 'underline' }}
+                    key={b}
+                    onClick={() => { push({ brand: activeBrand === b ? null : b }); setOpenDrop(null) }}
+                    style={{
+                      textAlign: 'left', padding: '5px 8px', borderRadius: 5, fontSize: '13px',
+                      fontWeight: activeBrand === b ? 700 : 400,
+                      background: activeBrand === b ? '#f0f0f0' : 'transparent',
+                    }}
                   >
-                    {t('filterClear')}
+                    {b}
                   </button>
-                )}
+                ))}
               </div>
-            )}
-          </div>
-        )}
+              {activeBrand && (
+                <button
+                  onClick={() => { push({ brand: null }); setOpenDrop(null) }}
+                  style={{ marginTop: '10px', fontSize: '11px', color: '#888', textDecoration: 'underline' }}
+                >
+                  {t('filterClear')}
+                </button>
+              )}
+            </div>
+          )}
+        </div>
 
         {/* Price dropdown */}
         <div style={{ position: 'relative' }}>
