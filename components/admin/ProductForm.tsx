@@ -94,6 +94,26 @@ export default function ProductForm({ product }: { product?: Product }) {
         </div>
       </div>
 
+      <div className="admin-form-row-ay">
+        <label className="admin-label-ay">Gjinia</label>
+        <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+          {(['men', 'women', 'kids', 'unisex'] as const).map(g => {
+            const labels: Record<string, string> = { men: 'Men', women: 'Women', kids: 'Kids', unisex: 'Unisex' }
+            return (
+              <label key={g} style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', fontWeight: 500, fontSize: '14px' }}>
+                <input
+                  type="radio"
+                  name="gender"
+                  value={g}
+                  defaultChecked={(product?.gender ?? 'unisex') === g}
+                />
+                {labels[g]}
+              </label>
+            )
+          })}
+        </div>
+      </div>
+
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
         <div className="admin-form-row-ay">
           <label className="admin-label-ay">Çmimi ($)</label>

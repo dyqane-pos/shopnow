@@ -53,6 +53,7 @@ create table if not exists public.products (
   name        text not null,
   brand       text not null,
   category    text not null default 'clothing',
+  gender      text default 'unisex',
   price       numeric(10,2) not null,
   old_price   numeric(10,2),
   description text,
