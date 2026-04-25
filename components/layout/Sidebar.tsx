@@ -1,11 +1,15 @@
+'use client'
 import Link from 'next/link'
 import type { Category } from '@/lib/types'
+import { useLang } from '@/context/LanguageContext'
 
 export default function Sidebar({ links }: { links: Category[] }) {
+  const { t } = useLang()
+
   const sections = [
-    { title: 'Eksploroni', items: links.slice(0, 2) },
-    { title: 'Kategoritë', items: links.slice(2, 10) },
-    { title: 'Stil & Madhësi', items: links.slice(10) },
+    { title: t('sbExplore'),    items: links.slice(0, 2) },
+    { title: t('sbCategories'), items: links.slice(2, 10) },
+    { title: t('sbStyle'),      items: links.slice(10) },
   ].filter(s => s.items.length > 0)
 
   return (

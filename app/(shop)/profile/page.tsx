@@ -1,8 +1,7 @@
 import { redirect } from 'next/navigation'
 import { createServerSupabase } from '@/lib/supabase-server'
-import { ini, fmt } from '@/lib/utils'
 import type { Order } from '@/lib/types'
-import ProfileOrders from '@/components/shop/ProfileOrders'
+import ProfileContent from '@/components/shop/ProfileContent'
 
 export default async function ProfilePage() {
   const supabase = createServerSupabase()
@@ -17,25 +16,10 @@ export default async function ProfilePage() {
   const name = profile?.name || user.email || 'Përdorues'
 
   return (
-    <div className="profile-page-ay">
-      <div className="profile-hero-ay">
-        <div className="avatar-ay">{ini(name)}</div>
-        <div>
-          <div style={{ fontWeight: 800, fontSize: '16px' }}>{name}</div>
-          <div style={{ color: '#888', fontSize: '12px' }}>{user.email}</div>
-        </div>
-      </div>
-
-      <h2 style={{ fontSize: '15px', fontWeight: 800, marginBottom: '1rem' }}>Porositë e mia</h2>
-
-      {!orders?.length ? (
-        <div className="empty-ay">
-          <h3>Asnjë porosi</h3>
-          <p>Bëj porosinë e parë nga dyqani.</p>
-        </div>
-      ) : (
-        <ProfileOrders orders={orders as Order[]} />
-      )}
-    </div>
+    <ProfileContent
+      name={name}
+      email={user.email ?? ''}
+      orders={(orders ?? []) as Order[]}
+    />
   )
 }

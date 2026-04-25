@@ -3,18 +3,24 @@ import { useState } from 'react'
 import Image from 'next/image'
 import type { Order } from '@/lib/types'
 import { fmt } from '@/lib/utils'
+import { useLang } from '@/context/LanguageContext'
 
 const statusClass: Record<string, string> = {
   pending: 'status-pending', processing: 'status-confirmed',
   shipped: 'status-shipped', delivered: 'status-delivered', cancelled: 'status-cancelled'
 }
-const statusLabel: Record<string, string> = {
-  pending: 'Në pritje', processing: 'Duke procesuar', shipped: 'Dërguar',
-  delivered: 'Dorëzuar', cancelled: 'Anuluar'
-}
 
 export default function ProfileOrders({ orders }: { orders: Order[] }) {
   const [expanded, setExpanded] = useState<Set<number>>(new Set())
+  const { t } = useLang()
+
+  const statusLabel: Record<string, string> = {
+    pending: t('statusPending'),
+    processing: t('statusProcessing'),
+    shipped: t('statusShipped'),
+    delivered: t('statusDelivered'),
+    cancelled: t('statusCancelled'),
+  }
 
   const toggle = (id: number) =>
     setExpanded(s => { const n = new Set(s); n.has(id) ? n.delete(id) : n.add(id); return n })
@@ -31,7 +37,7 @@ export default function ProfileOrders({ orders }: { orders: Order[] }) {
             <div>
               <div style={{ fontWeight: 700, marginBottom: '2px' }}>#{o.id}</div>
               <div style={{ fontSize: '11px', color: '#888' }}>
-                {new Date(o.created_at).toLocaleDateString('sq-AL')} · {Array.isArray(o.items) ? o.items.length : 0} artikuj
+                {new Date(o.created_at).toLocaleDateString('sq-AL')} · {Array.isArray(o.items) ? o.items.length : 0} {t('profileItems')}
               </div>
             </div>
             <div style={{ textAlign: 'right', display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -59,7 +65,7 @@ export default function ProfileOrders({ orders }: { orders: Order[] }) {
                   <div style={{ flex: 1, fontSize: '13px' }}>
                     <div style={{ fontWeight: 700 }}>{item.brand}</div>
                     <div style={{ color: '#555' }}>{item.name}</div>
-                    {item.size && <div style={{ color: '#888', fontSize: '11px' }}>Madhësia: {item.size}</div>}
+                    {item.size && <div style={{ color: '#888', fontSize: '11px' }}>{t('profileSize')} {item.size}</div>}
                   </div>
                   <div style={{ textAlign: 'right', fontSize: '13px' }}>
                     <div style={{ color: '#888' }}>{item.qty} × {fmt(item.price)}</div>

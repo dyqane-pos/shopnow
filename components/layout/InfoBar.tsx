@@ -1,9 +1,13 @@
+'use client'
+import { useLang } from '@/context/LanguageContext'
+
 export default function InfoBar() {
+  const { t } = useLang()
   return (
     <div className="infobar-ay">
-      <span>🚛 DËRGESA FALAS MBI $50</span>
-      <span>🔄 KTHIM 30 DITË</span>
-      <span>🔒 PAGESA E SIGURT</span>
+      <span>{t('infoShipping')}</span>
+      <span>{t('infoReturns')}</span>
+      <span>{t('infoSecure')}</span>
     </div>
   )
 }

@@ -5,22 +5,24 @@ import { useState } from 'react'
 import { useCart } from '@/hooks/useCart'
 import { fmt } from '@/lib/utils'
 import { useToast } from '@/hooks/useToast'
+import { useLang } from '@/context/LanguageContext'
 import CheckoutModal from './CheckoutModal'
 
 export default function CartDrawer() {
   const { items, removeItem, updateQty, cartTotal, clearCart } = useCart()
   const { showToast } = useToast()
+  const { t } = useLang()
   const [showCheckout, setShowCheckout] = useState(false)
 
   if (items.length === 0) {
     return (
       <div className="cart-page-ay">
-        <h1 className="admin-h1-ay">Shporta</h1>
+        <h1 className="admin-h1-ay">{t('cartTitle')}</h1>
         <div className="empty-ay">
-          <h3>Shporta është bosh</h3>
-          <p style={{ marginBottom: '1rem' }}>Shto produkte për të vazhduar.</p>
+          <h3>{t('cartEmpty')}</h3>
+          <p style={{ marginBottom: '1rem' }}>{t('cartEmptySub')}</p>
           <Link href="/" className="add-btn-ay" style={{ display: 'inline-block', width: 'auto', padding: '12px 24px' }}>
-            Shko te dyqani
+            {t('cartGoShop')}
           </Link>
         </div>
       </div>
@@ -29,7 +31,7 @@ export default function CartDrawer() {
 
   return (
     <div className="cart-page-ay">
-      <h1 className="admin-h1-ay">Shporta ({items.length})</h1>
+      <h1 className="admin-h1-ay">{t('cartTitle')} ({items.length})</h1>
 
       {items.map(item => (
         <div key={`${item.product_id}-${item.size}`} className="cart-item-ay">
@@ -44,7 +46,7 @@ export default function CartDrawer() {
           <div className="cart-item-info-ay">
             <div style={{ fontWeight: 700, marginBottom: '2px' }}>{item.brand}</div>
             <div style={{ color: '#555', marginBottom: '4px' }}>{item.name}</div>
-            {item.size && <div style={{ fontSize: '11px', color: '#888', marginBottom: '8px' }}>Madhësia: {item.size}</div>}
+            {item.size && <div style={{ fontSize: '11px', color: '#888', marginBottom: '8px' }}>{t('cartSize')} {item.size}</div>}
 
             <div className="qty-row-ay" style={{ gap: '8px' }}>
               <button className="qty-btn-ay" onClick={() => updateQty(item.product_id, item.size, item.qty - 1)}>−</button>
@@ -59,18 +61,18 @@ export default function CartDrawer() {
               onClick={() => removeItem(item.product_id, item.size)}
               style={{ fontSize: '11px', color: '#e8002d', fontWeight: 600 }}
             >
-              Hiq
+              {t('cartRemove')}
             </button>
           </div>
         </div>
       ))}
 
       <div className="cart-total-ay">
-        Total: {fmt(cartTotal)}
+        {t('cartTotal')} {fmt(cartTotal)}
       </div>
 
       <button className="checkout-btn-ay" onClick={() => setShowCheckout(true)}>
-        Vazhdo me blerjen
+        {t('cartCheckout')}
       </button>
 
       {showCheckout && (

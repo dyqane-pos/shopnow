@@ -5,9 +5,11 @@ import { useTransition, useState } from 'react'
 import { useCart } from '@/hooks/useCart'
 import { useAuth } from '@/hooks/useAuth'
 import { useCategoriesContext } from '@/context/CategoriesContext'
+import { useLang } from '@/context/LanguageContext'
 import { logout } from '@/actions/auth'
 import { ini } from '@/lib/utils'
 import ThemeToggle from '@/components/ui/ThemeToggle'
+import LangSwitch from '@/components/ui/LangSwitch'
 
 export default function NavBar() {
   const { cartCount, hydrated } = useCart()
@@ -17,6 +19,7 @@ export default function NavBar() {
   const pathname = usePathname()
   const params = useSearchParams()
   const [, startTransition] = useTransition()
+  const { t } = useLang()
   const [searchVal, setSearchVal] = useState(params.get('q') ?? '')
   const [mobileOpen, setMobileOpen] = useState(false)
 
@@ -76,8 +79,8 @@ export default function NavBar() {
                 <Link href="/profile" className="nav-icon desktop-only-ay" title="Profili">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                 </Link>
-                <button onClick={() => logout()} className="nav-icon nav-icon-btn desktop-only-ay" title="Dil">
-                  Dil
+                <button onClick={() => logout()} className="nav-icon nav-icon-btn desktop-only-ay" title={t('navLogout')}>
+                  {t('navLogout')}
                 </button>
               </>
             ) : (
@@ -95,6 +98,7 @@ export default function NavBar() {
               {hydrated && cartCount > 0 && <span className="cart-badge-ay">{cartCount}</span>}
             </Link>
 
+            <LangSwitch />
             <ThemeToggle />
           </div>
         </div>
@@ -117,7 +121,7 @@ export default function NavBar() {
 
           <form onSubmit={handleSearch} className="search-form">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#aaa" strokeWidth="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-            <input type="search" placeholder="Kërko produkte, brende..." value={searchVal}
+            <input type="search" placeholder={t('searchPlaceholder')} value={searchVal}
               onChange={e => setSearchVal(e.target.value)} className="search-input" />
           </form>
         </div>
@@ -128,7 +132,7 @@ export default function NavBar() {
         <div className="mob-overlay-ay" onClick={closeMobile}>
           <div className="mob-drawer-ay" onClick={e => e.stopPropagation()}>
             <div className="mob-drawer-head-ay">
-              <span style={{ fontWeight: 900, fontSize: '14px', letterSpacing: .5 }}>Menu</span>
+              <span style={{ fontWeight: 900, fontSize: '14px', letterSpacing: .5 }}>{t('navMenu')}</span>
               <button onClick={closeMobile} className="mob-close-ay">×</button>
             </div>
 
@@ -137,7 +141,7 @@ export default function NavBar() {
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#aaa" strokeWidth="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
               <input
                 type="search"
-                placeholder="Kërko produkte, brende..."
+                placeholder={t('searchPlaceholder')}
                 value={searchVal}
                 onChange={e => setSearchVal(e.target.value)}
                 className="search-input"
@@ -147,7 +151,7 @@ export default function NavBar() {
 
             {/* Gjinia */}
             <div className="mob-section-ay">
-              <div className="mob-section-title-ay">Gjinia</div>
+              <div className="mob-section-title-ay">{t('navGender')}</div>
               <div className="mob-chips-ay">
                 {genders.map(g => (
                   <button key={g.id}
@@ -161,7 +165,7 @@ export default function NavBar() {
 
             {/* Kategoritë */}
             <div className="mob-section-ay">
-              <div className="mob-section-title-ay">Kategoritë</div>
+              <div className="mob-section-title-ay">{t('navCats')}</div>
               <div className="mob-chips-ay">
                 {productCats.map(c => (
                   <button key={c.id}
@@ -184,27 +188,27 @@ export default function NavBar() {
                 <>
                   <Link href="/profile" onClick={closeMobile} className="mob-link-ay">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                    Profili im
+                    {t('navProfile')}
                   </Link>
                   <Link href="/wishlist" onClick={closeMobile} className="mob-link-ay">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
-                    Wishlist
+                    {t('navWishlist')}
                   </Link>
                   {isAdmin && (
                     <Link href="/admin" onClick={closeMobile} className="mob-link-ay">
                       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
-                      Admin Panel
+                      {t('navAdmin')}
                     </Link>
                   )}
                   <button onClick={() => { logout(); closeMobile() }} className="mob-link-ay" style={{ color: '#e8002d' }}>
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-                    Dil
+                    {t('navLogout')}
                   </button>
                 </>
               ) : (
                 <Link href="/login" onClick={closeMobile} className="mob-link-ay">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                  Hyr / Regjistrohu
+                  {t('navSignIn')}
                 </Link>
               )}
             </div>

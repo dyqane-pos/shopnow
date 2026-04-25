@@ -2,6 +2,7 @@
 import { useRouter, useSearchParams, usePathname } from 'next/navigation'
 import { useTransition, useState, useRef, useEffect } from 'react'
 import { useCategoriesContext } from '@/context/CategoriesContext'
+import { useLang } from '@/context/LanguageContext'
 
 export default function FilterBar({ total, sizes, brands, view }: {
   total: number
@@ -10,6 +11,7 @@ export default function FilterBar({ total, sizes, brands, view }: {
   view: 'grid' | 'list'
 }) {
   const { productCats } = useCategoriesContext()
+  const { t } = useLang()
   const router = useRouter()
   const pathname = usePathname()
   const params = useSearchParams()
@@ -53,7 +55,7 @@ export default function FilterBar({ total, sizes, brands, view }: {
       {/* Row 1: categories + sale + sort + view */}
       <div className="filter-row-ay">
         <button className={`filter-chip-ay${activeCat === 'all' ? ' active' : ''}`} onClick={() => push({ cat: null })}>
-          Të gjitha
+          {t('filterAll')}
         </button>
         {productCats.filter(c => c.id !== 'all').map(c => (
           <button key={c.id} className={`filter-chip-ay${activeCat === c.id ? ' active' : ''}`} onClick={() => push({ cat: c.id })}>
@@ -69,10 +71,10 @@ export default function FilterBar({ total, sizes, brands, view }: {
         </button>
 
         <select className="sort-select" value={sort} onChange={e => push({ sort: e.target.value || null })}>
-          <option value="">Rendit: Parazgjedhja</option>
-          <option value="price_asc">Çmimi: Ulët → Lartë</option>
-          <option value="price_desc">Çmimi: Lartë → Ulët</option>
-          <option value="newest">Më të rejat</option>
+          <option value="">{t('sortDefault')}</option>
+          <option value="price_asc">{t('sortPriceAsc')}</option>
+          <option value="price_desc">{t('sortPriceDesc')}</option>
+          <option value="newest">{t('sortNewest')}</option>
         </select>
 
         {/* View toggle */}
@@ -109,11 +111,11 @@ export default function FilterBar({ total, sizes, brands, view }: {
               className={`filter-chip-ay${activeSize ? ' active' : ''}`}
               onClick={() => setOpenDrop(openDrop === 'size' ? null : 'size')}
             >
-              {activeSize ? `Madhësia: ${activeSize}` : 'Madhësia'} ▾
+              {activeSize ? `${t('filterSize')}: ${activeSize}` : t('filterSize')} ▾
             </button>
             {openDrop === 'size' && (
               <div className="filter-drop-ay">
-                <div style={{ fontWeight: 700, fontSize: '11px', marginBottom: '8px', color: '#888', letterSpacing: '.5px', textTransform: 'uppercase' }}>Madhësia</div>
+                <div style={{ fontWeight: 700, fontSize: '11px', marginBottom: '8px', color: '#888', letterSpacing: '.5px', textTransform: 'uppercase' }}>{t('filterSize')}</div>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
                   {sizes.map(s => (
                     <button
@@ -130,7 +132,7 @@ export default function FilterBar({ total, sizes, brands, view }: {
                     onClick={() => { push({ size: null }); setOpenDrop(null) }}
                     style={{ marginTop: '10px', fontSize: '11px', color: '#888', textDecoration: 'underline' }}
                   >
-                    Pastro
+                    {t('filterClear')}
                   </button>
                 )}
               </div>
@@ -145,11 +147,11 @@ export default function FilterBar({ total, sizes, brands, view }: {
               className={`filter-chip-ay${activeBrand ? ' active' : ''}`}
               onClick={() => setOpenDrop(openDrop === 'brand' ? null : 'brand')}
             >
-              {activeBrand || 'Brendi'} ▾
+              {activeBrand || t('filterBrand')} ▾
             </button>
             {openDrop === 'brand' && (
               <div className="filter-drop-ay" style={{ minWidth: 200, maxHeight: 260, overflowY: 'auto' }}>
-                <div style={{ fontWeight: 700, fontSize: '11px', marginBottom: '8px', color: '#888', letterSpacing: '.5px', textTransform: 'uppercase' }}>Brendi</div>
+                <div style={{ fontWeight: 700, fontSize: '11px', marginBottom: '8px', color: '#888', letterSpacing: '.5px', textTransform: 'uppercase' }}>{t('filterBrand')}</div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                   {brands.map(b => (
                     <button
@@ -170,7 +172,7 @@ export default function FilterBar({ total, sizes, brands, view }: {
                     onClick={() => { push({ brand: null }); setOpenDrop(null) }}
                     style={{ marginTop: '10px', fontSize: '11px', color: '#888', textDecoration: 'underline' }}
                   >
-                    Pastro
+                    {t('filterClear')}
                   </button>
                 )}
               </div>
@@ -186,11 +188,11 @@ export default function FilterBar({ total, sizes, brands, view }: {
           >
             {params.get('minPrice') || params.get('maxPrice')
               ? `€${params.get('minPrice') || '0'} – €${params.get('maxPrice') || '∞'}`
-              : 'Çmimi'} ▾
+              : t('filterPrice')} ▾
           </button>
           {openDrop === 'price' && (
             <div className="filter-drop-ay" style={{ minWidth: 220 }}>
-              <div style={{ fontWeight: 700, fontSize: '11px', marginBottom: '10px', color: '#888', letterSpacing: '.5px', textTransform: 'uppercase' }}>Çmimi (€)</div>
+              <div style={{ fontWeight: 700, fontSize: '11px', marginBottom: '10px', color: '#888', letterSpacing: '.5px', textTransform: 'uppercase' }}>{t('filterPrice')} (€)</div>
               <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                 <input
                   type="number"
@@ -214,14 +216,14 @@ export default function FilterBar({ total, sizes, brands, view }: {
               </div>
               <div style={{ display: 'flex', gap: '8px', marginTop: '10px' }}>
                 <button className="filter-chip-ay active" style={{ borderRadius: 6, padding: '5px 14px' }} onClick={applyPrice}>
-                  Apliko
+                  {t('filterApply')}
                 </button>
                 {(params.get('minPrice') || params.get('maxPrice')) && (
                   <button
                     style={{ fontSize: '11px', color: '#888', textDecoration: 'underline' }}
                     onClick={() => { setMinVal(''); setMaxVal(''); push({ minPrice: null, maxPrice: null }); setOpenDrop(null) }}
                   >
-                    Pastro
+                    {t('filterClear')}
                   </button>
                 )}
               </div>
@@ -235,12 +237,12 @@ export default function FilterBar({ total, sizes, brands, view }: {
             style={{ fontSize: '11px', color: '#e8002d', fontWeight: 600, marginLeft: '4px' }}
             onClick={() => { setMinVal(''); setMaxVal(''); push({ sale: null, size: null, brand: null, minPrice: null, maxPrice: null }) }}
           >
-            × Pastro filtrat
+            {t('filterClearAll')}
           </button>
         )}
       </div>
 
-      <div className="results-count">{total} produkte</div>
+      <div className="results-count">{total} {t('filterProducts')}</div>
     </div>
   )
 }

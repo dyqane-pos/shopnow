@@ -2,9 +2,11 @@
 import { useState } from 'react'
 import LoginForm from '@/components/auth/LoginForm'
 import RegisterForm from '@/components/auth/RegisterForm'
+import { useLang } from '@/context/LanguageContext'
 
 export default function LoginPage() {
   const [tab, setTab] = useState<'login' | 'register'>('login')
+  const { t } = useLang()
 
   return (
     <div className="auth-page-ay">
@@ -18,10 +20,10 @@ export default function LoginPage() {
 
         <div className="auth-tabs-ay">
           <button className={`auth-tab-ay${tab === 'login' ? ' active' : ''}`} onClick={() => setTab('login')}>
-            Hyr
+            {t('authSignIn')}
           </button>
           <button className={`auth-tab-ay${tab === 'register' ? ' active' : ''}`} onClick={() => setTab('register')}>
-            Regjistrohu
+            {t('authRegister')}
           </button>
         </div>
 

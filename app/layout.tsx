@@ -4,6 +4,7 @@ import { AuthProvider } from '@/context/AuthContext'
 import { CartProvider } from '@/context/CartContext'
 import { ToastProvider } from '@/context/ToastContext'
 import { WishlistProvider } from '@/context/WishlistContext'
+import { LanguageProvider } from '@/context/LanguageContext'
 
 export const metadata: Metadata = {
   title: 'ShopNow — Dyqani juaj online',
@@ -24,15 +25,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         `}} />
       </head>
       <body>
-        <AuthProvider>
-          <WishlistProvider>
-            <CartProvider>
-              <ToastProvider>
-                {children}
-              </ToastProvider>
-            </CartProvider>
-          </WishlistProvider>
-        </AuthProvider>
+        <LanguageProvider>
+          <AuthProvider>
+            <WishlistProvider>
+              <CartProvider>
+                <ToastProvider>
+                  {children}
+                </ToastProvider>
+              </CartProvider>
+            </WishlistProvider>
+          </AuthProvider>
+        </LanguageProvider>
       </body>
     </html>
   )

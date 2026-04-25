@@ -6,13 +6,7 @@ import type { Product } from '@/lib/types'
 import { fmt, disc } from '@/lib/utils'
 import { useCart } from '@/hooks/useCart'
 import { useToast } from '@/hooks/useToast'
-
-const SECTIONS = [
-  { key: 'desc',    label: 'Përshkrimi' },
-  { key: 'details', label: 'Detaje Produkti' },
-  { key: 'sizefit', label: 'Madhësia & Forma' },
-  { key: 'return',  label: 'Politika e Kthimit' },
-]
+import { useLang } from '@/context/LanguageContext'
 
 function getPhotos(product: Product): string[] {
   if (product.photos?.length) return product.photos
@@ -27,6 +21,7 @@ export default function ProductModal({ products }: { products: Product[] }) {
   const [, startTransition] = useTransition()
   const { addItem } = useCart()
   const { showToast } = useToast()
+  const { t } = useLang()
 
   const [selectedSize, setSelectedSize] = useState<string | null>(null)
   const [qty, setQty] = useState(1)
@@ -51,7 +46,7 @@ export default function ProductModal({ products }: { products: Product[] }) {
 
   const handleAdd = () => {
     if (sizes.length > 0 && !selectedSize) {
-      showToast('Zgjidh madhësinë', 'error')
+      showToast(t('modalSize'), 'error')
       return
     }
     addItem(product, selectedSize ?? '', qty)
@@ -68,7 +63,7 @@ export default function ProductModal({ products }: { products: Product[] }) {
       <div className="modal-panel-ay" onClick={e => e.stopPropagation()}>
         <button className="modal-close-ay" onClick={close}>×</button>
 
-        {/* Galeria e fotografive */}
+        {/* Photo gallery */}
         <div className="modal-gallery-ay">
           <div className="modal-img-ay" style={{ position: 'relative' }}>
             {photos.length > 0 ? (
@@ -81,11 +76,10 @@ export default function ProductModal({ products }: { products: Product[] }) {
               />
             ) : (
               <div style={{ width: '100%', height: '100%', background: '#f0f0ee', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ccc' }}>
-                Pa foto
+                {t('modalNoPhoto')}
               </div>
             )}
 
-            {/* Shigjeta navigimi — vetëm nëse ka >1 foto */}
             {photos.length > 1 && (
               <>
                 <button className="gallery-arrow-ay left" onClick={e => { e.stopPropagation(); prevPhoto() }}>‹</button>
@@ -95,7 +89,6 @@ export default function ProductModal({ products }: { products: Product[] }) {
             )}
           </div>
 
-          {/* Thumbnail strip */}
           {photos.length > 1 && (
             <div className="gallery-thumbs-ay">
               {photos.map((url, idx) => (
@@ -104,7 +97,7 @@ export default function ProductModal({ products }: { products: Product[] }) {
                   className={`gallery-thumb-ay${activePhoto === idx ? ' active' : ''}`}
                   onClick={() => setActivePhoto(idx)}
                 >
-                  <Image src={url} alt={`Foto ${idx + 1}`} fill sizes="60px" style={{ objectFit: 'cover' }} />
+                  <Image src={url} alt={`${idx + 1}`} fill sizes="60px" style={{ objectFit: 'cover' }} />
                 </button>
               ))}
             </div>
@@ -128,24 +121,24 @@ export default function ProductModal({ products }: { products: Product[] }) {
         <div className="modal-infos-ay">
           <div className="modal-info-item-ay">
             <span className="modal-info-icon-ay">🚚</span>
-            <span className="modal-info-text-ay">Transport falas</span>
-            <span className="modal-info-badge-ay" style={{ background: '#e8f5e9', color: '#2e7d32' }}>Falas</span>
+            <span className="modal-info-text-ay">{t('modalFreeShip')}</span>
+            <span className="modal-info-badge-ay" style={{ background: '#e8f5e9', color: '#2e7d32' }}>{t('modalFree')}</span>
           </div>
           <div className="modal-info-item-ay">
             <span className="modal-info-icon-ay">📦</span>
-            <span className="modal-info-text-ay">7–14 ditë pune</span>
-            <span className="modal-info-badge-ay" style={{ background: '#1a1a1a', color: '#fff' }}>Merit pritjen!</span>
+            <span className="modal-info-text-ay">{t('modalDelivery')}</span>
+            <span className="modal-info-badge-ay" style={{ background: '#1a1a1a', color: '#fff' }}>{t('modalWorth')}</span>
           </div>
           <div className="modal-info-item-ay">
             <span className="modal-info-icon-ay">↩</span>
-            <span className="modal-info-text-ay">30 ditë kthim</span>
+            <span className="modal-info-text-ay">{t('modalReturn')}</span>
           </div>
         </div>
 
-        {/* Madhësia */}
+        {/* Size */}
         {sizes.length > 0 && (
           <div>
-            <div className="modal-field-label-ay">Madhësia</div>
+            <div className="modal-field-label-ay">{t('modalSize')}</div>
             <div className="size-grid-ay">
               {sizes.map(s => (
                 <button key={s} className={`size-btn-ay${selectedSize === s ? ' selected' : ''}`} onClick={() => setSelectedSize(s)}>
@@ -156,9 +149,9 @@ export default function ProductModal({ products }: { products: Product[] }) {
           </div>
         )}
 
-        {/* Sasia */}
+        {/* Quantity */}
         <div>
-          <div className="modal-field-label-ay">Sasia</div>
+          <div className="modal-field-label-ay">{t('modalQty')}</div>
           <div className="qty-row-ay">
             <button className="qty-btn-ay" onClick={() => setQty(q => Math.max(1, q - 1))}>−</button>
             <span className="qty-val-ay">{qty}</span>
@@ -167,15 +160,15 @@ export default function ProductModal({ products }: { products: Product[] }) {
         </div>
 
         <button className="add-btn-ay" onClick={handleAdd}>
-          Shto në shportë · {fmt(product.price * qty)}
+          {t('modalAddCart')} · {fmt(product.price * qty)}
         </button>
 
-        {/* Accordion seksione */}
+        {/* Accordion sections */}
         <div className="modal-accordions-ay">
           {product.description && (
             <div className="modal-acc-ay">
               <button className="modal-acc-trigger-ay" onClick={() => toggle('desc')}>
-                <span>{SECTIONS[0].label}</span>
+                <span>{t('modalDescSection')}</span>
                 <span className="modal-acc-arrow-ay">{openSection === 'desc' ? '∧' : '∨'}</span>
               </button>
               {openSection === 'desc' && (
@@ -188,28 +181,28 @@ export default function ProductModal({ products }: { products: Product[] }) {
 
           <div className="modal-acc-ay">
             <button className="modal-acc-trigger-ay" onClick={() => toggle('details')}>
-              <span>{SECTIONS[1].label}</span>
+              <span>{t('modalDetails')}</span>
               <span className="modal-acc-arrow-ay">{openSection === 'details' ? '∧' : '∨'}</span>
             </button>
             {openSection === 'details' && (
               <div className="modal-acc-body-ay">
-                <div className="modal-acc-row-ay"><span>Brendi</span><span>{product.brand}</span></div>
-                <div className="modal-acc-row-ay"><span>Kategoria</span><span style={{ textTransform: 'capitalize' }}>{product.category}</span></div>
-                {product.gender && <div className="modal-acc-row-ay"><span>Gjinia</span><span>{product.gender}</span></div>}
-                <div className="modal-acc-row-ay"><span>Vlerësimi</span><span>{'★'.repeat(Math.round(product.stars))} ({product.reviews} vlerësime)</span></div>
+                <div className="modal-acc-row-ay"><span>{t('modalBrand')}</span><span>{product.brand}</span></div>
+                <div className="modal-acc-row-ay"><span>{t('modalCategory')}</span><span style={{ textTransform: 'capitalize' }}>{product.category}</span></div>
+                {product.gender && <div className="modal-acc-row-ay"><span>{t('modalGender')}</span><span>{product.gender}</span></div>}
+                <div className="modal-acc-row-ay"><span>{t('modalRating')}</span><span>{'★'.repeat(Math.round(product.stars))} ({product.reviews} {t('modalReviews')})</span></div>
               </div>
             )}
           </div>
 
           <div className="modal-acc-ay">
             <button className="modal-acc-trigger-ay" onClick={() => toggle('sizefit')}>
-              <span>{SECTIONS[2].label}</span>
+              <span>{t('modalSizeFit')}</span>
               <span className="modal-acc-arrow-ay">{openSection === 'sizefit' ? '∧' : '∨'}</span>
             </button>
             {openSection === 'sizefit' && (
               <div className="modal-acc-body-ay">
                 <p style={{ color: '#555', lineHeight: 1.6 }}>
-                  Produkti është sipas madhësisë standarde. Nëse jeni midis dy madhësive, rekomandojmë të zgjidhni madhësinë më të madhe. Madhësitë e disponueshme: {sizes.join(', ')}.
+                  {t('modalSizeText')} {sizes.join(', ')}.
                 </p>
               </div>
             )}
@@ -217,14 +210,12 @@ export default function ProductModal({ products }: { products: Product[] }) {
 
           <div className="modal-acc-ay">
             <button className="modal-acc-trigger-ay" onClick={() => toggle('return')}>
-              <span>{SECTIONS[3].label}</span>
+              <span>{t('modalReturnPol')}</span>
               <span className="modal-acc-arrow-ay">{openSection === 'return' ? '∧' : '∨'}</span>
             </button>
             {openSection === 'return' && (
               <div className="modal-acc-body-ay">
-                <p style={{ color: '#555', lineHeight: 1.6 }}>
-                  Mund ta ktheni produktin brenda <strong>30 ditëve</strong> nga data e blerjes. Produkti duhet të jetë i papërdorur dhe me etiketat origjinale. Kontaktoni ekipin tonë për të iniciuar kthimin.
-                </p>
+                <p style={{ color: '#555', lineHeight: 1.6 }}>{t('modalReturnText')}</p>
               </div>
             )}
           </div>
