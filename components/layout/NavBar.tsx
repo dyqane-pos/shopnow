@@ -50,7 +50,7 @@ export default function NavBar() {
           {/* Desktop: gender tabs — Mobile: hamburger */}
           <div className="gender-tabs desktop-only-ay">
             {genders.map(g => (
-              <button key={g.id} onClick={() => push({ gender: g.label })}
+              <button key={g.id} onClick={() => push({ gender: g.label, sidebar: null })}
                 className={`gender-tab${activeGender === g.label ? ' active' : ''}`}>
                 {g.label}
               </button>
@@ -107,7 +107,7 @@ export default function NavBar() {
         <div className="nav-row2 desktop-only-ay">
           <div className="cat-tabs">
             {productCats.map(c => (
-              <button key={c.id} onClick={() => push({ cat: c.id })}
+              <button key={c.id} onClick={() => push({ cat: c.id, sidebar: null })}
                 className={`cat-tab${activeCat === c.id ? ' active' : ''}`}>
                 {c.label}
               </button>

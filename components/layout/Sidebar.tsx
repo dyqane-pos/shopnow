@@ -1,10 +1,28 @@
 'use client'
-import Link from 'next/link'
+import { useRouter, useSearchParams, usePathname } from 'next/navigation'
+import { useTransition } from 'react'
 import type { Category } from '@/lib/types'
 import { useLang } from '@/context/LanguageContext'
 
 export default function Sidebar({ links }: { links: Category[] }) {
   const { t } = useLang()
+  const params = useSearchParams()
+  const pathname = usePathname()
+  const router = useRouter()
+  const [, startTransition] = useTransition()
+
+  const activeSidebar = params.get('sidebar')
+
+  const push = (label: string) => {
+    const next = new URLSearchParams(params.toString())
+    if (next.get('sidebar') === label) {
+      next.delete('sidebar')
+    } else {
+      next.set('sidebar', label)
+    }
+    next.delete('modal')
+    startTransition(() => router.push(`${pathname}?${next.toString()}`, { scroll: false }))
+  }
 
   const sections = [
     { title: t('sbExplore'),    items: links.slice(0, 2) },
@@ -18,9 +36,13 @@ export default function Sidebar({ links }: { links: Category[] }) {
         <div key={section.title} className="sb-section-ay">
           <div className="sb-section-title">{section.title}</div>
           {section.items.map(link => (
-            <Link key={link.id} href={`/?sidebar=${encodeURIComponent(link.label)}`} className="sb-link-ay">
+            <button
+              key={link.id}
+              onClick={() => push(link.label)}
+              className={`sb-link-ay${activeSidebar === link.label ? ' active' : ''}`}
+            >
               {link.label}
-            </Link>
+            </button>
           ))}
         </div>
       ))}
