@@ -216,7 +216,7 @@ export default function ProductModal({ products }: { products: Product[] }) {
             {openSection === 'sizefit' && (
               <div className="modal-acc-body-ay">
                 <p style={{ color: '#555', lineHeight: 1.6 }}>
-                  {t('modalSizeText')} {sizes.join(', ')}.
+                  {product.size_info || `${t('modalSizeText')} ${sizes.join(', ')}.`}
                 </p>
               </div>
             )}
@@ -229,7 +229,7 @@ export default function ProductModal({ products }: { products: Product[] }) {
             </button>
             {openSection === 'return' && (
               <div className="modal-acc-body-ay">
-                <p style={{ color: '#555', lineHeight: 1.6 }}>{t('modalReturnText')}</p>
+                <p style={{ color: '#555', lineHeight: 1.6 }}>{product.return_policy || t('modalReturnText')}</p>
               </div>
             )}
           </div>

@@ -185,6 +185,16 @@ export default function ProductForm({ product, categoryTags }: { product?: Produ
       </div>
 
       <div className="admin-form-row-ay">
+        <label className="admin-label-ay">Madhësia &amp; Forma <span style={{ fontWeight: 400, textTransform: 'none', color: '#aaa' }}>(lëre bosh për tekstin standard)</span></label>
+        <textarea name="size_info" className="admin-input-ay" rows={2} defaultValue={product?.size_info ?? ''} placeholder="p.sh. Produkti është sipas madhësisë standarde..." />
+      </div>
+
+      <div className="admin-form-row-ay">
+        <label className="admin-label-ay">Politika e Kthimit <span style={{ fontWeight: 400, textTransform: 'none', color: '#aaa' }}>(lëre bosh për tekstin standard)</span></label>
+        <textarea name="return_policy" className="admin-input-ay" rows={2} defaultValue={product?.return_policy ?? ''} placeholder="p.sh. Kthim brenda 30 ditëve..." />
+      </div>
+
+      <div className="admin-form-row-ay">
         <label className="admin-label-ay">
           Madhësitë (me presje)
           {product && (

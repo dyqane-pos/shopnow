@@ -18,6 +18,8 @@ export interface Product {
   tags?: string[]
   color?: string | null
   material?: string | null
+  size_info?: string | null
+  return_policy?: string | null
   photo_url?: string | null
   photos?: string[]
   is_sale: boolean

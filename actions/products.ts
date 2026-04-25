@@ -47,6 +47,8 @@ export async function saveProduct(_prev: unknown, formData: FormData) {
     photo_url: photos[0] ?? formData.get('photo_url') as string ?? null,
     color: (formData.get('color') as string) || null,
     material: (formData.get('material') as string) || null,
+    size_info: (formData.get('size_info') as string) || null,
+    return_policy: (formData.get('return_policy') as string) || null,
     is_sale: formData.get('is_sale') === 'true',
     stars: Number(formData.get('stars') || 5),
     reviews: Number(formData.get('reviews') || 0),
