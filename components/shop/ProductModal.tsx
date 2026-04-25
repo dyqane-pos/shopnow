@@ -1,13 +1,15 @@
 'use client'
 import Image from 'next/image'
 import { useRouter, useSearchParams, usePathname } from 'next/navigation'
-import { useTransition, useState } from 'react'
+import { useTransition, useState, useEffect } from 'react'
 import type { Product } from '@/lib/types'
 import { fmt, disc } from '@/lib/utils'
 import { useCart } from '@/hooks/useCart'
 import { useToast } from '@/hooks/useToast'
 import { useLang } from '@/context/LanguageContext'
 import { useProductPresence } from '@/hooks/useProductPresence'
+import { useAuthContext } from '@/context/AuthContext'
+import { incrementViews } from '@/actions/products'
 
 function getPhotos(product: Product): string[] {
   if (product.photos?.length) return product.photos
@@ -23,6 +25,7 @@ export default function ProductModal({ products }: { products: Product[] }) {
   const { addItem } = useCart()
   const { showToast } = useToast()
   const { t } = useLang()
+  const { isAdmin } = useAuthContext()
 
   const [selectedSize, setSelectedSize] = useState<string | null>(null)
   const [qty, setQty] = useState(1)
@@ -33,6 +36,14 @@ export default function ProductModal({ products }: { products: Product[] }) {
   const product = products.find(p => String(p.id) === modalId)
 
   useProductPresence(product?.id ?? null)
+
+  useEffect(() => {
+    if (!product || isAdmin) return
+    const key = `viewed-${product.id}`
+    if (sessionStorage.getItem(key)) return
+    sessionStorage.setItem(key, '1')
+    incrementViews(product.id)
+  }, [product?.id, isAdmin])
 
   if (!product) return null
 

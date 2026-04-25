@@ -67,6 +67,11 @@ export async function saveProduct(_prev: unknown, formData: FormData) {
   redirect('/admin/products')
 }
 
+export async function incrementViews(productId: number) {
+  const service = createServiceSupabase()
+  await service.rpc('increment_product_views', { product_id: productId })
+}
+
 export async function deleteProduct(id: number) {
   const check = await verifyOwnership(id)
   if ('error' in check) return
