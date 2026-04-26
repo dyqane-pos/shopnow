@@ -42,7 +42,17 @@ const FALLBACK_CATEGORY_TAGS: Record<string, string[]> = {
   electronics: ['New', 'Trending', 'Exclusive'],
 }
 
-export default function ProductForm({ product, categoryTags }: { product?: Product; categoryTags?: Record<string, string[]> }) {
+export default function ProductForm({
+  product,
+  categoryTags,
+  initialGender,
+  initialCategory,
+}: {
+  product?: Product
+  categoryTags?: Record<string, string[]>
+  initialGender?: string
+  initialCategory?: string
+}) {
   const CATEGORY_TAGS = categoryTags ?? FALLBACK_CATEGORY_TAGS
   const [state, action] = useFormState(saveProduct, null)
   const [photos, setPhotos] = useState<string[]>(initPhotos(product))
@@ -50,9 +60,11 @@ export default function ProductForm({ product, categoryTags }: { product?: Produ
   const [uploadError, setUploadError] = useState<string | null>(null)
   const fileRef = useRef<HTMLInputElement>(null)
   const cameraRef = useRef<HTMLInputElement>(null)
-  const [selectedCategory, setSelectedCategory] = useState(product?.category ?? 'clothing')
+  const defaultCategory = product?.category ?? initialCategory ?? 'clothing'
+  const [selectedCategory, setSelectedCategory] = useState(defaultCategory)
+  const [selectedGender, setSelectedGender] = useState(product?.gender ?? initialGender ?? 'unisex')
   const [sizes, setSizes] = useState(
-    product?.sizes?.join(', ') ?? CATEGORY_SIZES[product?.category ?? 'clothing'] ?? ''
+    product?.sizes?.join(', ') ?? CATEGORY_SIZES[defaultCategory] ?? ''
   )
   const [selectedTags, setSelectedTags] = useState<string[]>(product?.tags ?? [])
 
@@ -142,7 +154,8 @@ export default function ProductForm({ product, categoryTags }: { product?: Produ
                   type="radio"
                   name="gender"
                   value={g}
-                  defaultChecked={(product?.gender ?? 'unisex') === g}
+                  checked={selectedGender === g}
+                  onChange={() => setSelectedGender(g)}
                 />
                 {labels[g]}
               </label>

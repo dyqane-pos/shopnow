@@ -1519,3 +1519,100 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 [data-theme="dark"] .mob-link-ay:hover { background: #1c1c1c; }
 [data-theme="dark"] .dash-kpi-ay { background: #1c1c1c; border-color: #2a2a2a; }
 [data-theme="dark"] .dash-kpi-value-ay { color: #f0f0f0; }
+
+/* ── PRODUCT WIZARD ── */
+.wizard-ay { max-width: 600px; }
+
+.wizard-progress-ay {
+  display: flex;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+.wizard-step-ay {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+  flex: 1;
+}
+.wizard-step-ay:last-child { flex: 0; }
+.wizard-step-num-ay {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700;
+  border: 2px solid #ddd;
+  background: #fff;
+  color: #bbb;
+  flex-shrink: 0;
+  transition: background .2s, border-color .2s, color .2s;
+}
+.wizard-step-ay.active .wizard-step-num-ay {
+  background: #1a1a1a; border-color: #1a1a1a; color: #fff;
+}
+.wizard-step-ay.done .wizard-step-num-ay {
+  background: #4caf50; border-color: #4caf50; color: #fff;
+}
+.wizard-step-label-ay {
+  font-size: 11px; font-weight: 700; letter-spacing: .4px;
+  text-transform: uppercase; color: #bbb;
+  transition: color .2s;
+}
+.wizard-step-ay.active .wizard-step-label-ay { color: #1a1a1a; }
+.wizard-step-ay.done .wizard-step-label-ay { color: #4caf50; }
+.wizard-step-line-ay {
+  flex: 1;
+  height: 2px;
+  background: #e8e8e4;
+  margin: 0 8px;
+  border-radius: 2px;
+}
+.wizard-step-ay.done + .wizard-step-ay .wizard-step-line-ay,
+.wizard-step-ay.done .wizard-step-line-ay { background: #4caf50; }
+
+.wizard-hint-ay {
+  font-size: 13px; color: #888; margin-bottom: 1.2rem; font-weight: 500;
+}
+
+.wizard-nav-ay {
+  display: flex; align-items: center; gap: 12px; margin-bottom: 1rem;
+}
+.wizard-breadcrumb-ay {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 13px; color: #555;
+}
+.wizard-sep-ay {
+  color: #bbb; font-size: 16px; line-height: 1; margin: 0 2px;
+}
+
+.wizard-cards-ay {
+  display: grid;
+  gap: 12px;
+}
+.wizard-cards-2-ay { grid-template-columns: repeat(2, 1fr); }
+.wizard-cards-3-ay { grid-template-columns: repeat(3, 1fr); }
+
+@media (max-width: 480px) {
+  .wizard-cards-2-ay { grid-template-columns: repeat(2, 1fr); }
+  .wizard-cards-3-ay { grid-template-columns: repeat(2, 1fr); }
+}
+
+.wizard-card-ay {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 8px;
+  padding: 24px 12px;
+  border: 2px solid #e8e8e4;
+  border-radius: 12px;
+  background: #fff;
+  cursor: pointer;
+  transition: border-color .15s, background .15s, transform .1s;
+  text-align: center;
+}
+.wizard-card-ay:hover {
+  border-color: #1a1a1a;
+  background: #fafaf9;
+  transform: translateY(-2px);
+}
+.wizard-icon-ay { font-size: 32px; line-height: 1; }
+.wizard-card-label-ay { font-size: 14px; font-weight: 700; color: #1a1a1a; }
+.wizard-card-desc-ay { font-size: 11px; color: #999; font-weight: 500; }

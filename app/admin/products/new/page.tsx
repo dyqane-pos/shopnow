@@ -1,5 +1,5 @@
 import { createServiceSupabase } from '@/lib/supabase-server'
-import ProductForm from '@/components/admin/ProductForm'
+import ProductWizard from '@/components/admin/ProductWizard'
 import Link from 'next/link'
 
 async function fetchCategoryTags(): Promise<Record<string, string[]>> {
@@ -24,7 +24,7 @@ export default async function NewProductPage() {
         <Link href="/admin/products" className="admin-btn-ay admin-btn-ghost">← Kthehu</Link>
         <h1 className="admin-h1-ay" style={{ margin: 0 }}>Produkt i ri</h1>
       </div>
-      <ProductForm categoryTags={Object.keys(categoryTags).length > 0 ? categoryTags : undefined} />
+      <ProductWizard categoryTags={Object.keys(categoryTags).length > 0 ? categoryTags : undefined} />
     </div>
   )
 }
