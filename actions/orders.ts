@@ -11,13 +11,12 @@ export async function checkout(
 ) {
   const supabase = createServerSupabase()
   const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return { error: 'Duhet të hyni për të bërë porosinë.' }
   const service = createServiceSupabase()
   const { error } = await service.from('orders').insert({
-    user_id: user.id, items, total, status: 'pending', payment_method, delivery_info
+    user_id: user?.id ?? null, items, total, status: 'pending', payment_method, delivery_info
   })
   if (error) return { error: error.message }
-  revalidatePath('/profile')
+  if (user) revalidatePath('/profile')
   return { success: true }
 }
 

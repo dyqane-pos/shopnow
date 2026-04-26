@@ -1701,3 +1701,10 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 [data-theme="dark"] .mob-gender-strip-ay { background: #111; border-color: #2a2a2a; }
 [data-theme="dark"] .mob-gender-tab-ay { background: #1a1a1a; border-color: #333; color: #aaa; }
 [data-theme="dark"] .mob-gender-tab-ay.active { background: #f0f0f0; color: #111; border-color: #f0f0f0; }
+
+/* ── CART GUEST OPTIONS ── */
+.cart-guest-ay {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}

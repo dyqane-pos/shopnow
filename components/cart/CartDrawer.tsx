@@ -74,9 +74,18 @@ export default function CartDrawer() {
       </div>
 
       {!loading && !user ? (
-        <Link href="/login" className="checkout-btn-ay" style={{ display: 'block', textAlign: 'center' }}>
-          🔐 Hyr për të vazhduar me porosinë
-        </Link>
+        <div className="cart-guest-ay">
+          <Link href="/login" className="checkout-btn-ay" style={{ display: 'block', textAlign: 'center' }}>
+            Hyr / Regjistrohu
+          </Link>
+          <button
+            className="checkout-btn-ay"
+            style={{ background: '#fff', color: '#1a1a1a', border: '1.5px solid #1a1a1a' }}
+            onClick={() => setShowCheckout(true)}
+          >
+            Vazhdo si mysafir
+          </button>
+        </div>
       ) : (
         <button className="checkout-btn-ay" onClick={() => setShowCheckout(true)}>
           {t('cartCheckout')}

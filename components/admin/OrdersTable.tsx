@@ -23,7 +23,7 @@ function exportCSV(orders: Order[], userMap: Record<string, string>) {
     ['ID', 'Klienti', 'Telefon', 'Adresa', 'Qyteti', 'Total', 'Pagesa', 'Statusi', 'Data', 'Artikujt'],
     ...orders.map(o => [
       `#${o.id}`,
-      userMap[o.user_id] || o.user_id,
+      o.user_id ? (userMap[o.user_id] || o.user_id) : (o.delivery_info?.name || 'Mysafir'),
       o.delivery_info?.phone || '',
       o.delivery_info?.address || '',
       o.delivery_info?.city || '',
@@ -69,7 +69,7 @@ export default function OrdersTable({ orders, userMap }: { orders: Order[]; user
     if (search.trim()) {
       const q = search.trim().toLowerCase()
       r = r.filter(o => {
-        const name = (userMap[o.user_id] || o.user_id).toLowerCase()
+        const name = (o.user_id ? (userMap[o.user_id] || o.user_id) : (o.delivery_info?.name || 'Mysafir')).toLowerCase()
         return name.includes(q) || String(o.id).includes(q) ||
           (o.delivery_info?.name || '').toLowerCase().includes(q) ||
           (o.delivery_info?.city || '').toLowerCase().includes(q)
@@ -152,7 +152,12 @@ export default function OrdersTable({ orders, userMap }: { orders: Order[]; user
                 <tr>
                   <td style={{ fontFamily: 'monospace', fontSize: '11px' }}>#{o.id}</td>
                   <td style={{ fontWeight: 600 }}>
-                    <div>{userMap[o.user_id] || String(o.user_id).slice(0, 8) + '…'}</div>
+                    <div>
+                      {o.user_id
+                        ? (userMap[o.user_id] || String(o.user_id).slice(0, 8) + '…')
+                        : <span style={{ color: '#888', fontStyle: 'italic' }}>👤 {o.delivery_info?.name || 'Mysafir'}</span>
+                      }
+                    </div>
                     {o.delivery_info && (
                       <div style={{ fontSize: '11px', color: '#888', fontWeight: 400 }}>
                         {o.delivery_info.phone}
