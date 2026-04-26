@@ -1,5 +1,4 @@
 import { createServerSupabase, createServiceSupabase } from '@/lib/supabase-server'
-import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import ProductGrid from '@/components/shop/ProductGrid'
 import type { Product } from '@/lib/types'
@@ -7,7 +6,18 @@ import type { Product } from '@/lib/types'
 export default async function WishlistPage() {
   const supabase = createServerSupabase()
   const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect('/login')
+
+  if (!user) {
+    return (
+      <div className="empty-ay" style={{ marginTop: '3rem' }}>
+        <h3>♥ Lista e dëshirave</h3>
+        <p style={{ marginBottom: '1.5rem' }}>Hyr në llogari për të parë dhe ruajtur produktet e preferuara.</p>
+        <Link href="/login" className="add-btn-ay" style={{ display: 'inline-block', width: 'auto', padding: '12px 28px' }}>
+          Hyr / Regjistrohu
+        </Link>
+      </div>
+    )
+  }
 
   const service = createServiceSupabase()
   const { data: wishlistItems } = await service

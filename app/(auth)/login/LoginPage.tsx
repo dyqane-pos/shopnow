@@ -1,5 +1,7 @@
 'use client'
 import { useState } from 'react'
+import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
 import LoginForm from '@/components/auth/LoginForm'
 import RegisterForm from '@/components/auth/RegisterForm'
 import { useLang } from '@/context/LanguageContext'
@@ -7,6 +9,9 @@ import { useLang } from '@/context/LanguageContext'
 export default function LoginPage() {
   const [tab, setTab] = useState<'login' | 'register'>('login')
   const { t } = useLang()
+  const params = useSearchParams()
+  const next = params.get('next')
+  const isFromCart = next === '/cart'
 
   return (
     <div className="auth-page-ay">
@@ -31,6 +36,14 @@ export default function LoginPage() {
           ? <LoginForm onSwitch={() => setTab('register')} />
           : <RegisterForm onSwitch={() => setTab('login')} />
         }
+
+        {isFromCart && (
+          <div style={{ textAlign: 'center', marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid #f0f0ee' }}>
+            <Link href="/cart" style={{ fontSize: '13px', color: '#888', textDecoration: 'underline' }}>
+              Vazhdo pa llogari →
+            </Link>
+          </div>
+        )}
       </div>
     </div>
   )
