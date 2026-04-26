@@ -43,11 +43,9 @@ export default async function ShopPage({ searchParams }: { searchParams: SearchP
     if (searchParams.gender) {
       const g = searchParams.gender.toLowerCase()
       if (g === 'kids') {
-        // All kids: show all kids variants + unisex
-        query = query.in('gender', ['kids', 'kids-babies', 'kids-girls', 'kids-boys', 'unisex'])
+        query = query.in('gender', ['kids', 'kids-babies', 'kids-girls', 'kids-boys'])
       } else if (g.startsWith('kids-')) {
-        // Specific kids sub-type: show that + generic 'kids' products + unisex
-        query = query.in('gender', [g, 'kids', 'unisex'])
+        query = query.in('gender', [g, 'kids'])
       } else {
         query = query.in('gender', [g, 'unisex'])
       }
