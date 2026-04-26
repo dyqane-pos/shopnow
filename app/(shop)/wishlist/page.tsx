@@ -1,6 +1,7 @@
 import { createServerSupabase, createServiceSupabase } from '@/lib/supabase-server'
 import Link from 'next/link'
 import ProductGrid from '@/components/shop/ProductGrid'
+import GuestWishlistView from '@/components/shop/GuestWishlistView'
 import type { Product } from '@/lib/types'
 
 export default async function WishlistPage() {
@@ -8,15 +9,7 @@ export default async function WishlistPage() {
   const { data: { user } } = await supabase.auth.getUser()
 
   if (!user) {
-    return (
-      <div className="empty-ay" style={{ marginTop: '3rem' }}>
-        <h3>♥ Lista e dëshirave</h3>
-        <p style={{ marginBottom: '1.5rem' }}>Hyr në llogari për të parë dhe ruajtur produktet e preferuara.</p>
-        <Link href="/login" className="add-btn-ay" style={{ display: 'inline-block', width: 'auto', padding: '12px 28px' }}>
-          Hyr / Regjistrohu
-        </Link>
-      </div>
-    )
+    return <GuestWishlistView />
   }
 
   const service = createServiceSupabase()

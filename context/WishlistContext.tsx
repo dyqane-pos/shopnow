@@ -1,8 +1,26 @@
 'use client'
-import { createContext, useContext, useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { createContext, useContext, useState, useEffect, useRef } from 'react'
 import { createClient } from '@/lib/supabase'
 import { useAuth } from '@/hooks/useAuth'
+
+const LS_KEY = 'ay_wishlist'
+
+function lsGet(): Set<number> {
+  if (typeof window === 'undefined') return new Set()
+  try {
+    const raw = localStorage.getItem(LS_KEY)
+    if (!raw) return new Set()
+    return new Set(JSON.parse(raw) as number[])
+  } catch { return new Set() }
+}
+
+function lsSave(ids: Set<number>) {
+  localStorage.setItem(LS_KEY, JSON.stringify([...ids]))
+}
+
+function lsClear() {
+  localStorage.removeItem(LS_KEY)
+}
 
 interface WishlistContextValue {
   wished: Set<number>
@@ -15,21 +33,57 @@ const WishlistContext = createContext<WishlistContextValue>({
 })
 
 export function WishlistProvider({ children }: { children: React.ReactNode }) {
-  const { user } = useAuth()
-  const router = useRouter()
+  const { user, loading } = useAuth()
   const [wished, setWished] = useState<Set<number>>(new Set())
+  const mergedRef = useRef(false)
 
   useEffect(() => {
-    if (!user) { setWished(new Set()); return }
+    if (loading) return
+
+    if (!user) {
+      setWished(lsGet())
+      mergedRef.current = false
+      return
+    }
+
     const sb = createClient()
-    sb.from('wishlist').select('product_id').eq('user_id', user.id).then(({ data }) => {
-      if (data) setWished(new Set(data.map((r: { product_id: number }) => r.product_id)))
+    sb.from('wishlist').select('product_id').eq('user_id', user.id).then(async ({ data }) => {
+      const serverIds = new Set<number>(
+        data?.map((r: { product_id: number }) => r.product_id) ?? []
+      )
+
+      if (!mergedRef.current) {
+        mergedRef.current = true
+        const guestIds = lsGet()
+        if (guestIds.size > 0) {
+          const toInsert = [...guestIds].filter(id => !serverIds.has(id))
+          if (toInsert.length > 0) {
+            await sb.from('wishlist').insert(
+              toInsert.map(id => ({ user_id: user.id, product_id: id }))
+            )
+            toInsert.forEach(id => serverIds.add(id))
+          }
+          lsClear()
+        }
+      }
+
+      setWished(new Set(serverIds))
     })
-  }, [user])
+  }, [user, loading])
 
   const toggle = async (productId: number) => {
-    if (!user) { router.push('/login'); return }
     const prev = wished.has(productId)
+
+    if (!user) {
+      setWished(s => {
+        const next = new Set(s)
+        if (prev) next.delete(productId); else next.add(productId)
+        lsSave(next)
+        return next
+      })
+      return
+    }
+
     setWished(s => {
       const next = new Set(s)
       if (prev) next.delete(productId); else next.add(productId)
