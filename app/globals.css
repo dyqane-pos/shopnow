@@ -1656,3 +1656,48 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 [data-theme="dark"] .kids-subnav-tab-ay { color: #aaa; }
 [data-theme="dark"] .kids-subnav-tab-ay:hover { background: #252525; color: #f0f0f0; }
 [data-theme="dark"] .kids-subnav-tab-ay.active { background: #f0f0f0; color: #1a1a1a; }
+
+/* ── MOBILE GENDER STRIP ── */
+.mob-gender-strip-ay {
+  display: none;
+  overflow-x: auto;
+  gap: 6px;
+  padding: 6px 12px;
+  background: #fff;
+  border-bottom: 1px solid #f0f0ee;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.mob-gender-strip-ay::-webkit-scrollbar { display: none; }
+.mob-gender-tab-ay {
+  flex-shrink: 0;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 5px 14px;
+  border-radius: 20px;
+  border: 1.5px solid #e8e8e4;
+  background: #fff;
+  color: #555;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background .15s, color .15s, border-color .15s;
+}
+.mob-gender-tab-ay.active {
+  background: #1a1a1a;
+  color: #fff;
+  border-color: #1a1a1a;
+}
+.mob-gender-tab-ay.kids-sub {
+  font-size: 11px;
+  padding: 4px 10px;
+  border-color: #ddd;
+  color: #888;
+}
+.mob-gender-tab-ay.kids-sub.active {
+  background: #333;
+  color: #fff;
+  border-color: #333;
+}
+[data-theme="dark"] .mob-gender-strip-ay { background: #111; border-color: #2a2a2a; }
+[data-theme="dark"] .mob-gender-tab-ay { background: #1a1a1a; border-color: #333; color: #aaa; }
+[data-theme="dark"] .mob-gender-tab-ay.active { background: #f0f0f0; color: #111; border-color: #f0f0f0; }

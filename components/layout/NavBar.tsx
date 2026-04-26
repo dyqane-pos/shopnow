@@ -102,7 +102,7 @@ export default function NavBar() {
               </Link>
             )}
 
-            <Link href="/wishlist" className="nav-icon desktop-only-ay" title="Wishlist">
+            <Link href="/wishlist" className="nav-icon" title="Wishlist">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
             </Link>
 
@@ -116,7 +116,28 @@ export default function NavBar() {
           </div>
         </div>
 
-        {/* Kids sub-nav — shfaqet vetëm kur Kids është aktiv */}
+        {/* Gender strip — vetëm mobile */}
+        <div className="mob-gender-strip-ay mobile-only-ay">
+          {genders.map(g => {
+            const isActive = g.label === 'Kids' ? isKidsActive : activeGender === g.label
+            return (
+              <button key={g.id}
+                onClick={() => push({ gender: g.label, sidebar: null })}
+                className={`mob-gender-tab-ay${isActive ? ' active' : ''}`}>
+                {g.label}
+              </button>
+            )
+          })}
+          {isKidsActive && KIDS_SUBS.map(sub => (
+            <button key={sub.value}
+              onClick={() => push({ gender: sub.value, sidebar: null })}
+              className={`mob-gender-tab-ay kids-sub${activeGender === sub.value ? ' active' : ''}`}>
+              {sub.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Kids sub-nav — vetëm desktop */}
         {isKidsActive && (
           <div className="kids-subnav-ay desktop-only-ay">
             {KIDS_SUBS.map(sub => (
