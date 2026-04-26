@@ -6,12 +6,14 @@ import { useCart } from '@/hooks/useCart'
 import { fmt } from '@/lib/utils'
 import { useToast } from '@/hooks/useToast'
 import { useLang } from '@/context/LanguageContext'
+import { useAuth } from '@/hooks/useAuth'
 import CheckoutModal from './CheckoutModal'
 
 export default function CartDrawer() {
   const { items, removeItem, updateQty, cartTotal, clearCart } = useCart()
   const { showToast } = useToast()
   const { t } = useLang()
+  const { user, loading } = useAuth()
   const [showCheckout, setShowCheckout] = useState(false)
 
   if (items.length === 0) {
@@ -71,9 +73,15 @@ export default function CartDrawer() {
         {t('cartTotal')} {fmt(cartTotal)}
       </div>
 
-      <button className="checkout-btn-ay" onClick={() => setShowCheckout(true)}>
-        {t('cartCheckout')}
-      </button>
+      {!loading && !user ? (
+        <Link href="/login" className="checkout-btn-ay" style={{ display: 'block', textAlign: 'center' }}>
+          🔐 Hyr për të vazhduar me porosinë
+        </Link>
+      ) : (
+        <button className="checkout-btn-ay" onClick={() => setShowCheckout(true)}>
+          {t('cartCheckout')}
+        </button>
+      )}
 
       {showCheckout && (
         <CheckoutModal

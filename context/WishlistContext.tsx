@@ -1,5 +1,6 @@
 'use client'
 import { createContext, useContext, useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase'
 import { useAuth } from '@/hooks/useAuth'
 
@@ -15,6 +16,7 @@ const WishlistContext = createContext<WishlistContextValue>({
 
 export function WishlistProvider({ children }: { children: React.ReactNode }) {
   const { user } = useAuth()
+  const router = useRouter()
   const [wished, setWished] = useState<Set<number>>(new Set())
 
   useEffect(() => {
@@ -26,7 +28,7 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
   }, [user])
 
   const toggle = async (productId: number) => {
-    if (!user) return
+    if (!user) { router.push('/login'); return }
     const prev = wished.has(productId)
     setWished(s => {
       const next = new Set(s)
