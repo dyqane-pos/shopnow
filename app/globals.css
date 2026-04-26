@@ -1616,3 +1616,42 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 .wizard-icon-ay { font-size: 32px; line-height: 1; }
 .wizard-card-label-ay { font-size: 14px; font-weight: 700; color: #1a1a1a; }
 .wizard-card-desc-ay { font-size: 11px; color: #999; font-weight: 500; }
+
+/* ── KIDS SUB-NAV ── */
+.kids-subnav-ay {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 24px;
+  height: 36px;
+  background: #fafaf9;
+  border-bottom: 1px solid #f0f0ee;
+}
+.kids-subnav-tab-ay {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 20px;
+  border: 1.5px solid transparent;
+  color: #666;
+  background: transparent;
+  cursor: pointer;
+  transition: background .15s, color .15s, border-color .15s;
+  letter-spacing: .2px;
+}
+.kids-subnav-tab-ay:hover {
+  background: #f0f0ee;
+  color: #1a1a1a;
+}
+.kids-subnav-tab-ay.active {
+  background: #1a1a1a;
+  color: #fff;
+  border-color: #1a1a1a;
+}
+[data-theme="dark"] .kids-subnav-ay {
+  background: #1a1a1a;
+  border-color: #2a2a2a;
+}
+[data-theme="dark"] .kids-subnav-tab-ay { color: #aaa; }
+[data-theme="dark"] .kids-subnav-tab-ay:hover { background: #252525; color: #f0f0f0; }
+[data-theme="dark"] .kids-subnav-tab-ay.active { background: #f0f0f0; color: #1a1a1a; }

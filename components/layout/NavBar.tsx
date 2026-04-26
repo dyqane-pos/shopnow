@@ -25,6 +25,14 @@ export default function NavBar() {
 
   const activeCat = params.get('cat') ?? 'all'
   const activeGender = params.get('gender') ?? 'Men'
+  const isKidsActive = activeGender === 'Kids' || activeGender.toLowerCase().startsWith('kids-')
+
+  const KIDS_SUBS = [
+    { value: 'Kids',         label: 'All Kids' },
+    { value: 'Kids-Babies',  label: 'Babies' },
+    { value: 'Kids-Girls',   label: 'Girls' },
+    { value: 'Kids-Boys',    label: 'Boys' },
+  ]
 
   const push = (updates: Record<string, string | null>) => {
     const next = new URLSearchParams(params.toString())
@@ -49,12 +57,17 @@ export default function NavBar() {
         <div className="nav-row1">
           {/* Desktop: gender tabs — Mobile: hamburger */}
           <div className="gender-tabs desktop-only-ay">
-            {genders.map(g => (
-              <button key={g.id} onClick={() => push({ gender: g.label, sidebar: null })}
-                className={`gender-tab${activeGender === g.label ? ' active' : ''}`}>
-                {g.label}
-              </button>
-            ))}
+            {genders.map(g => {
+              const isActive = g.label === 'Kids'
+                ? isKidsActive
+                : activeGender === g.label
+              return (
+                <button key={g.id} onClick={() => push({ gender: g.label, sidebar: null })}
+                  className={`gender-tab${isActive ? ' active' : ''}`}>
+                  {g.label}
+                </button>
+              )
+            })}
           </div>
 
           {/* Hamburger — vetëm mobile */}
@@ -102,6 +115,21 @@ export default function NavBar() {
             <ThemeToggle />
           </div>
         </div>
+
+        {/* Kids sub-nav — shfaqet vetëm kur Kids është aktiv */}
+        {isKidsActive && (
+          <div className="kids-subnav-ay desktop-only-ay">
+            {KIDS_SUBS.map(sub => (
+              <button
+                key={sub.value}
+                onClick={() => push({ gender: sub.value, sidebar: null })}
+                className={`kids-subnav-tab-ay${activeGender === sub.value ? ' active' : ''}`}
+              >
+                {sub.label}
+              </button>
+            ))}
+          </div>
+        )}
 
         {/* Row 2: Category tabs + Search — fshihet në mobile */}
         <div className="nav-row2 desktop-only-ay">
@@ -153,14 +181,30 @@ export default function NavBar() {
             <div className="mob-section-ay">
               <div className="mob-section-title-ay">{t('navGender')}</div>
               <div className="mob-chips-ay">
-                {genders.map(g => (
-                  <button key={g.id}
-                    onClick={() => { push({ gender: g.label }); closeMobile() }}
-                    className={`mob-chip-ay${activeGender === g.label ? ' active' : ''}`}>
-                    {g.label}
-                  </button>
-                ))}
+                {genders.map(g => {
+                  const isActive = g.label === 'Kids' ? isKidsActive : activeGender === g.label
+                  return (
+                    <button key={g.id}
+                      onClick={() => { push({ gender: g.label }); closeMobile() }}
+                      className={`mob-chip-ay${isActive ? ' active' : ''}`}>
+                      {g.label}
+                    </button>
+                  )
+                })}
               </div>
+              {/* Kids sub-chips */}
+              {isKidsActive && (
+                <div className="mob-chips-ay" style={{ marginTop: '6px', paddingLeft: '12px', borderLeft: '2px solid #e8e8e4' }}>
+                  {KIDS_SUBS.map(sub => (
+                    <button key={sub.value}
+                      onClick={() => { push({ gender: sub.value }); closeMobile() }}
+                      className={`mob-chip-ay${activeGender === sub.value ? ' active' : ''}`}
+                      style={{ fontSize: '11px' }}>
+                      {sub.label}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Kategoritë */}

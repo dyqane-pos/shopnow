@@ -143,18 +143,22 @@ export default function ProductForm({
         </div>
       </div>
 
+      {/* hidden input submits actual gender value (including kids-babies, kids-girls etc.) */}
+      <input type="hidden" name="gender" value={selectedGender} />
+
       <div className="admin-form-row-ay">
         <label className="admin-label-ay">Gjinia</label>
         <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
           {(['men', 'women', 'kids', 'unisex'] as const).map(g => {
             const labels: Record<string, string> = { men: 'Men', women: 'Women', kids: 'Kids', unisex: 'Unisex' }
+            const isActive = g === 'kids' ? selectedGender.startsWith('kids') : selectedGender === g
             return (
               <label key={g} style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', fontWeight: 500, fontSize: '14px' }}>
                 <input
                   type="radio"
-                  name="gender"
+                  name="_gender_main"
                   value={g}
-                  checked={selectedGender === g}
+                  checked={isActive}
                   onChange={() => setSelectedGender(g)}
                 />
                 {labels[g]}
@@ -163,6 +167,32 @@ export default function ProductForm({
           })}
         </div>
       </div>
+
+      {/* Kids sub-type — shfaqet vetëm kur Kids është zgjedhur */}
+      {selectedGender.startsWith('kids') && (
+        <div className="admin-form-row-ay" style={{ marginTop: '-0.5rem', paddingLeft: '12px', borderLeft: '3px solid #e8e8e4' }}>
+          <label className="admin-label-ay">Tipi për fëmijë</label>
+          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+            {([
+              { value: 'kids',        label: 'Të gjithë (All Kids)' },
+              { value: 'kids-babies', label: '🍼 Babies' },
+              { value: 'kids-girls',  label: '🎀 Girls' },
+              { value: 'kids-boys',   label: '⚽ Boys' },
+            ] as const).map(opt => (
+              <label key={opt.value} style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', fontWeight: 500, fontSize: '13px' }}>
+                <input
+                  type="radio"
+                  name="_gender_kids_sub"
+                  value={opt.value}
+                  checked={selectedGender === opt.value}
+                  onChange={() => setSelectedGender(opt.value)}
+                />
+                {opt.label}
+              </label>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
         <div className="admin-form-row-ay">
