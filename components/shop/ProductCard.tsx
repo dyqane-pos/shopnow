@@ -5,12 +5,14 @@ import { useTransition } from 'react'
 import type { Product } from '@/lib/types'
 import { fmt, fmtLek, disc } from '@/lib/utils'
 import { useWishlist } from '@/hooks/useWishlist'
+import { useCategoriesContext } from '@/context/CategoriesContext'
 
 export default function ProductCard({ product, view = 'grid' }: { product: Product; view?: 'grid' | 'list' }) {
   const router = useRouter()
   const params = useSearchParams()
   const [, startTransition] = useTransition()
   const { isWished, toggle } = useWishlist(product.id)
+  const { eurToAll } = useCategoriesContext()
 
   const openModal = () => {
     const next = new URLSearchParams(params.toString())
@@ -60,7 +62,7 @@ export default function ProductCard({ product, view = 'grid' }: { product: Produ
         <div className="card-list-price-ay">
           <span className={`price-new-ay${hasSale ? ' sale' : ''}`}>{fmt(product.price)}</span>
           {hasSale && <span className="price-old-ay">{fmt(product.old_price!)}</span>}
-          <span className="price-lek-ay">{fmtLek(product.price)}</span>
+          <span className="price-lek-ay">{fmtLek(product.price, eurToAll)}</span>
         </div>
 
         <div style={{ position: 'relative', marginLeft: '8px' }}>
@@ -102,7 +104,7 @@ export default function ProductCard({ product, view = 'grid' }: { product: Produ
         <div className="card-price-ay">
           <span className={`price-new-ay${hasSale ? ' sale' : ''}`}>{fmt(product.price)}</span>
           {hasSale && <span className="price-old-ay">{fmt(product.old_price!)}</span>}
-          <span className="price-lek-ay">{fmtLek(product.price)}</span>
+          <span className="price-lek-ay">{fmtLek(product.price, eurToAll)}</span>
         </div>
       </div>
     </div>

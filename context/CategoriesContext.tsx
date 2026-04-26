@@ -2,6 +2,7 @@
 import { createContext, useContext } from 'react'
 import type { Category } from '@/lib/types'
 import { CATEGORIES, SIDEBAR_LINKS } from '@/lib/types'
+import { DEFAULT_EUR_TO_ALL } from '@/lib/utils'
 
 const DEFAULT_CATEGORY_TAGS: Record<string, string[]> = {
   clothing:    ['New', 'Trending', 'T-shirts', 'Jeans', 'Jackets', 'Pants', 'Sweaters & hoodies', 'Underwear', 'Button-up shirts', 'Suits & jackets', 'Swimwear', 'Coats', 'Plus sizes', 'Occasions', 'Exclusive'],
@@ -16,6 +17,7 @@ interface CategoriesContextValue {
   genders: Category[]
   sidebarLinks: Category[]
   categoryTags: Record<string, string[]>
+  eurToAll: number
 }
 
 const defaults: CategoriesContextValue = {
@@ -23,19 +25,21 @@ const defaults: CategoriesContextValue = {
   genders: ['Women', 'Men', 'Kids'].map((g, i) => ({ id: g.toLowerCase(), label: g, type: 'gender' as const, sort_order: i, is_active: true })),
   sidebarLinks: SIDEBAR_LINKS.map((s, i) => ({ id: s.toLowerCase().replace(/\s+/g, '-'), label: s, type: 'sidebar' as const, sort_order: i, is_active: true })),
   categoryTags: DEFAULT_CATEGORY_TAGS,
+  eurToAll: DEFAULT_EUR_TO_ALL,
 }
 
 const CategoriesContext = createContext<CategoriesContextValue>(defaults)
 
-export function CategoriesProvider({ children, productCats, genders, sidebarLinks, categoryTags }: {
+export function CategoriesProvider({ children, productCats, genders, sidebarLinks, categoryTags, eurToAll }: {
   children: React.ReactNode
   productCats: Category[]
   genders: Category[]
   sidebarLinks: Category[]
   categoryTags: Record<string, string[]>
+  eurToAll: number
 }) {
   return (
-    <CategoriesContext.Provider value={{ productCats, genders, sidebarLinks, categoryTags }}>
+    <CategoriesContext.Provider value={{ productCats, genders, sidebarLinks, categoryTags, eurToAll }}>
       {children}
     </CategoriesContext.Provider>
   )

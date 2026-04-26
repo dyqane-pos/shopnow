@@ -4,6 +4,7 @@ import { useRouter, useSearchParams, usePathname } from 'next/navigation'
 import { useTransition, useState, useEffect } from 'react'
 import type { Product } from '@/lib/types'
 import { fmt, fmtLek, disc } from '@/lib/utils'
+import { useCategoriesContext } from '@/context/CategoriesContext'
 import { useCart } from '@/hooks/useCart'
 import { useToast } from '@/hooks/useToast'
 import { useLang } from '@/context/LanguageContext'
@@ -26,6 +27,7 @@ export default function ProductModal({ products }: { products: Product[] }) {
   const { showToast } = useToast()
   const { t } = useLang()
   const { isAdmin } = useAuthContext()
+  const { eurToAll } = useCategoriesContext()
 
   const [selectedSize, setSelectedSize] = useState<string | null>(null)
   const [qty, setQty] = useState(1)
@@ -131,7 +133,7 @@ export default function ProductModal({ products }: { products: Product[] }) {
               </span>
             )}
           </div>
-          <div className="price-lek-ay">{fmtLek(product.price)}</div>
+          <div className="price-lek-ay">{fmtLek(product.price, eurToAll)}</div>
         </div>
 
         {/* Info badges */}

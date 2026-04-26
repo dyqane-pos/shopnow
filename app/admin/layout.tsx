@@ -9,6 +9,7 @@ const navLinks = [
   { href: '/admin/users', label: 'Përdoruesit' },
   { href: '/admin/categories', label: 'Kategoritë' },
   { href: '/admin/admins', label: 'Adminët' },
+  { href: '/admin/settings', label: 'Cilësimet' },
 ]
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {

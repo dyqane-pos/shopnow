@@ -4,6 +4,7 @@ import Sidebar from '@/components/layout/Sidebar'
 import { CategoriesProvider, DEFAULT_CATEGORY_TAGS } from '@/context/CategoriesContext'
 import { createServerSupabase, createServiceSupabase } from '@/lib/supabase-server'
 import { CATEGORIES, SIDEBAR_LINKS, type Category } from '@/lib/types'
+import { DEFAULT_EUR_TO_ALL } from '@/lib/utils'
 
 const FALLBACK_PRODUCT_CATS: Category[] = CATEGORIES.map((c, i) => ({
   id: c.id, label: c.label, type: 'product', sort_order: i, is_active: true,
@@ -20,6 +21,7 @@ export default async function ShopLayout({ children }: { children: React.ReactNo
   let genders = FALLBACK_GENDERS
   let sidebarLinks = FALLBACK_SIDEBAR
   let categoryTags: Record<string, string[]> = DEFAULT_CATEGORY_TAGS
+  let eurToAll = DEFAULT_EUR_TO_ALL
 
   try {
     const supabase = createServerSupabase()
@@ -50,8 +52,15 @@ export default async function ShopLayout({ children }: { children: React.ReactNo
     }
   } catch {}
 
+  try {
+    const service = createServiceSupabase()
+    const { data: setting } = await service
+      .from('settings').select('value').eq('key', 'eur_to_all').maybeSingle()
+    if (setting?.value) eurToAll = Number(setting.value) || DEFAULT_EUR_TO_ALL
+  } catch {}
+
   return (
-    <CategoriesProvider productCats={productCats} genders={genders} sidebarLinks={sidebarLinks} categoryTags={categoryTags}>
+    <CategoriesProvider productCats={productCats} genders={genders} sidebarLinks={sidebarLinks} categoryTags={categoryTags} eurToAll={eurToAll}>
       <InfoBar />
       <NavBar />
       <div className="shop-wrap">
