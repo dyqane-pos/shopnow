@@ -520,6 +520,7 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 .price-new-ay { font-size: 13px; font-weight: 700; color: #1a1a1a; }
 .price-old-ay { font-size: 12px; color: #aaa; text-decoration: line-through; }
 .price-new-ay.sale { color: #e8002d; }
+.price-lek-ay { font-size: 11px; color: #999; font-weight: 500; margin-top: 2px; display: block; }
 
 /* ── MODAL ── */
 .modal-overlay-ay {

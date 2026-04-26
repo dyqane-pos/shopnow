@@ -3,7 +3,7 @@ import Image from 'next/image'
 import { useRouter, useSearchParams, usePathname } from 'next/navigation'
 import { useTransition, useState, useEffect } from 'react'
 import type { Product } from '@/lib/types'
-import { fmt, disc } from '@/lib/utils'
+import { fmt, fmtLek, disc } from '@/lib/utils'
 import { useCart } from '@/hooks/useCart'
 import { useToast } from '@/hooks/useToast'
 import { useLang } from '@/context/LanguageContext'
@@ -122,13 +122,16 @@ export default function ProductModal({ products }: { products: Product[] }) {
         <div className="modal-name-ay">{product.name}</div>
 
         <div className="modal-price-ay">
-          <span className={`modal-price-new${hasSale ? ' sale' : ''}`}>{fmt(product.price)}</span>
-          {hasSale && <span className="modal-price-old">{fmt(product.old_price!)}</span>}
-          {hasSale && (
-            <span style={{ fontSize: '12px', background: '#e8002d', color: '#fff', padding: '2px 6px', borderRadius: '3px', fontWeight: 800 }}>
-              {disc(product.price, product.old_price!)}
-            </span>
-          )}
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', flexWrap: 'wrap' }}>
+            <span className={`modal-price-new${hasSale ? ' sale' : ''}`}>{fmt(product.price)}</span>
+            {hasSale && <span className="modal-price-old">{fmt(product.old_price!)}</span>}
+            {hasSale && (
+              <span style={{ fontSize: '12px', background: '#e8002d', color: '#fff', padding: '2px 6px', borderRadius: '3px', fontWeight: 800 }}>
+                {disc(product.price, product.old_price!)}
+              </span>
+            )}
+          </div>
+          <div className="price-lek-ay">{fmtLek(product.price)}</div>
         </div>
 
         {/* Info badges */}

@@ -213,11 +213,11 @@ export default function ProductForm({
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
         <div className="admin-form-row-ay">
-          <label className="admin-label-ay">Çmimi ($)</label>
+          <label className="admin-label-ay">Çmimi (€)</label>
           <input name="price" type="number" step="0.01" min="0" required className="admin-input-ay" defaultValue={product?.price ?? ''} placeholder="49.90" />
         </div>
         <div className="admin-form-row-ay">
-          <label className="admin-label-ay">Çmimi i vjetër ($) — SALE</label>
+          <label className="admin-label-ay">Çmimi i vjetër (€) — SALE</label>
           <input name="old_price" type="number" step="0.01" min="0" className="admin-input-ay" defaultValue={product?.old_price ?? ''} placeholder="Lëre bosh nëse nuk ka" />
         </div>
       </div>
